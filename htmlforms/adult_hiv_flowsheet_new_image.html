@@ -1,0 +1,75 @@
+<htmlform>
+    <macros>
+		@PATIENT_IDENTIFIER@=IMB ID
+    	
+		@MEDICAL_IMAGE_CONSTRUCT@=2472
+		@TEST_ORDERED@=1271
+		@TESTS_ORDERED_NON_CODED@=2153
+		@ASSESSMENT_COMMENTS@=1364
+		
+		@XRAY_CHEST@=12
+		@COMPUTED_TOMOGRAPHY_SCAN_HEAD@=846
+		@OTHER_NON_CODED@=5622
+		
+    </macros>
+
+	<link type="text/css" rel="stylesheet" href="/openmrs/moduleResources/rwandaadulthivflowsheet/adult_hiv_flowsheet_new_row.css" />
+
+	<table border="2" cellspacing="0" cellpadding="6" width="100%">
+		<tr>
+			<td>
+				<b>
+					$@PATIENT_IDENTIFIER@: <lookup class="value" expression="patientIdentifiers.get(&quot;$@PATIENT_IDENTIFIER@&quot;)" />
+				</b>
+			</td>
+			<td>
+				Date: <encounterDate default="today"/>
+			</td>
+			<td>
+				Clinique / Clinic: <encounterLocation />
+			</td>
+			<td>
+				Nom / Signature: <encounterProvider role="HIV Patient Provider"/>
+			</td>
+		</tr>
+	</table>
+	
+	<section headerLabel="SUIVI IMAGERIE / IMAGING">
+		<table border="1" width="100%">
+			<obsgroup groupingConceptId="$@MEDICAL_IMAGE_CONSTRUCT@">
+			<tr>
+				<th width="20%">Imagerie /<br/>Image</th>
+				<td>
+					<obs conceptId="$@TEST_ORDERED@" id="imageOrdered" answerConceptIds="$@XRAY_CHEST@,$@COMPUTED_TOMOGRAPHY_SCAN_HEAD@,$@OTHER_NON_CODED@" answerLabels="Cliche Thorax/X-ray Chest&lt;br&gt;,CT head&lt;br&gt;,Autre/Other" required="true"/>
+					<obs conceptId="$@TESTS_ORDERED_NON_CODED@" id="imageOrderedNonCoded" size="40"/>
+				</td>
+			</tr>
+			<tr>
+				<th>Conclusion clinique /<br/>Clinical conclusion</th>
+				<td><obs conceptId="$@ASSESSMENT_COMMENTS@" rows="4" cols="40" /></td>
+			</tr>
+			</obsgroup>
+		</table>
+	</section>
+	
+	<br />
+	<center><submit /></center>
+	<br />
+	
+<script type="text/javascript">
+$j(document).ready(function() {
+	getField('imageOrderedNonCoded.value')[0].disabled = true;
+
+	getField('imageOrdered.value').change(function() {
+		if(getValue('imageOrdered.value') == $@OTHER_NON_CODED@) {
+			getField('imageOrderedNonCoded.value')[0].disabled = false;
+		} else {
+			getField('imageOrderedNonCoded.value')[0].disabled = true;
+		}
+    });
+
+});
+</script>
+	
+
+</htmlform>

@@ -1,0 +1,149 @@
+<htmlform>
+
+    <macros>
+		@PATIENT_IDENTIFIER@=IMB ID
+    	
+   		@PATENT_VISIT_CONSTRUCT@=6959
+		@WEIGHT_KG@=5089
+		@FUNCTIONAL_ABILITY_OF_THE_PATIENT@=1662
+		@CURRENT_OPPORTUNISTIC_INFECTION@=1607
+		@CURRENT_OPPORTUNISTIC_INFECTION_NON_CODED@=1731
+		@SEXUALLY_TRANSMITTED_INFECTION@=1607
+		@SEXUALLY_TRANSMITTED_INFECTION_NON_CODED@=1731
+		@RESULT_OF_TUBERCULOSIS_SCREENING_QUALITATIVE@=2136
+		@METHOD_OF_FAMILY_PLANNING@=374
+		@PREGNANCY_STATUS@=5272
+		@NUMBER_OF_DOSES_OF_ANTIRETROVIRALS_MISSED_IN_THE_PAST_MONTH@=1738
+		@FREE_TEXT_REASON_FOR_POOR_ADHERENCE_TO_ANTIRETROVIRAL_THERAPY@=2686
+
+		@NORMAL@=1115
+		@Assistance_required@=6922
+		@BEDRIDDEN@=1665
+
+		@ABSTINENCE@=1720
+		@CONDOMS@=190
+		@NATURAL_FAMILY_PLANNING@=5277
+		@NONE@=1107
+
+		@OTHER_NON_CODED@=5622
+    </macros>
+
+	
+	<link type="text/css" rel="stylesheet" href="/openmrs/moduleResources/rwandaadulthivflowsheet/adult_hiv_flowsheet_new_row.css" />
+
+
+	<table border="2" cellspacing="0" cellpadding="6" width="100%">
+		<tr>
+			<td>
+				<b>
+					$@PATIENT_IDENTIFIER@: <lookup class="value" expression="patientIdentifiers.get(&quot;$@PATIENT_IDENTIFIER@&quot;)" />
+				</b>
+			</td>
+			<td>
+				Date: <encounterDate default="today"/>
+			</td>
+			<td>
+				Clinique / Clinic: <encounterLocation />
+			</td>
+			<td>
+				Nom / Signature: <encounterProvider role="HIV Patient Provider"/>
+			</td>
+		</tr>
+	</table>
+	
+	<section headerLabel="RESUME DES VISITES / SUMMARY OF VISITS">
+		<table border="1" width="100%">
+			<obsgroup groupingConceptId="$@PATENT_VISIT_CONSTRUCT@">
+			<tr>
+				<th>Poids /<br/>Weight</th>
+				<td>
+					<obs conceptId="$@WEIGHT_KG@"/> 
+				</td>
+			</tr>
+			<tr>
+				<th>Etat du patient /<br/>Stage of patient</th>
+				<td>
+					<obs conceptId="$@FUNCTIONAL_ABILITY_OF_THE_PATIENT@" answerConceptIds="$@NORMAL@,$@Assistance_required@,$@BEDRIDDEN@" answerLabels="A=activités normaux,B=effectue des activités avec aide,C=alités" style="radio"/> <br/>
+				</td>
+			</tr>
+			<tr>
+				<th>IO Actuelle? /<br/>Current OI?</th>
+				<td>
+					<obs conceptId="$@CURRENT_OPPORTUNISTIC_INFECTION@" id="currentOpportunisticInfection" />
+					<obs conceptId="$@CURRENT_OPPORTUNISTIC_INFECTION_NON_CODED@" id="currentOpportunisticInfectionNonCoded" size="40"/>
+				</td>
+			</tr>
+			<tr>
+				<th>IST Actuelle? /<br/>Current STI?</th>
+				<td>
+					<obs conceptId="$@SEXUALLY_TRANSMITTED_INFECTION@" id="currentSTI" />
+					<obs conceptId="$@SEXUALLY_TRANSMITTED_INFECTION_NON_CODED@" id="currentSTINonCoded" size="40"/>
+				</td>
+			</tr>
+			<tr>
+				<th>TB Screening</th>
+				<td>
+					<obs conceptId="$@RESULT_OF_TUBERCULOSIS_SCREENING_QUALITATIVE@" style="radio"/> <br/>
+				</td>
+			</tr>
+			<tr>
+				<th>Contraception</th>
+				<td>
+					<obs conceptId="$@METHOD_OF_FAMILY_PLANNING@" answerConceptIds="$@ABSTINENCE@,$@CONDOMS@,$@NATURAL_FAMILY_PLANNING@,$@NONE@" answerLabels="A=Abstinence,C=condoms,PF=Planification familiale,R=rien" style="radio"/> <br/>
+				</td>
+			</tr>
+ 			<tr>
+ 				<th>Enceinte /<br/>Pregnant</th>
+				<td>
+					<obs conceptId="$@PREGNANCY_STATUS@" style="radio"/> <br/>
+				</td>
+			</tr>
+			<tr>
+				<th># de doses manqués/30jrs /<br/># of doses missed/30days</th>
+				<td>
+					<obs conceptId="$@NUMBER_OF_DOSES_OF_ANTIRETROVIRALS_MISSED_IN_THE_PAST_MONTH@"/> 
+				</td>
+			</tr>
+			<tr>
+				<th>&lt;3 = &gt;95% = Tres bon<br/>4-8= 85-94% = bon<br/>&gt;9= &lt;85% = Faible /<br/>&lt;3 = &gt;95% = Tres bon<br/>4-8= 85-94% = bon<br/>&gt;9= &lt;85% = Faible</th>
+				<td>
+				</td>
+			</tr>
+			<tr>
+				<th>Explication pour les doses manqués /<br/>Explanation for the missed doses</th>
+				<td>
+					<obs conceptId="$@FREE_TEXT_REASON_FOR_POOR_ADHERENCE_TO_ANTIRETROVIRAL_THERAPY@" size="80"/>
+				</td>
+			</tr>			
+			</obsgroup>
+		</table>
+	</section>
+	
+	<br />
+	<center><submit /></center>
+	<br />
+
+<script type="text/javascript">
+$j(document).ready(function() {
+	getField('currentOpportunisticInfectionNonCoded.value')[0].disabled = true;
+	getField('currentSTINonCoded.value')[0].disabled = true;
+
+	getField('currentOpportunisticInfection.value').change(function() {
+		if(getValue('currentOpportunisticInfection.value') == $@OTHER_NON_CODED@) {
+			getField('currentOpportunisticInfectionNonCoded.value')[0].disabled = false;
+		} else {
+			getField('currentOpportunisticInfectionNonCoded.value')[0].disabled = true;
+		}
+    });
+
+	getField('currentSTI.value').change(function() {
+		if(getValue('currentSTI.value') == $@OTHER_NON_CODED@) {
+			getField('currentSTINonCoded.value')[0].disabled = false;
+		} else {
+			getField('currentSTINonCoded.value')[0].disabled = true;
+		}
+    });
+});
+</script>
+
+</htmlform>
