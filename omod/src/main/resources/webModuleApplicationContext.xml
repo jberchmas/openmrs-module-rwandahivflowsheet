@@ -11,7 +11,7 @@
            http://www.springframework.org/schema/util
            http://www.springframework.org/schema/util/spring-util-2.0.xsd">
     
-    <bean id="rwandaadulthivflowsheetUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <bean id="rwandahivflowsheetUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     	<property name="mappings">
             <props>
 	           <prop key="module/@MODULE_ID@/adulthivflowsheet.form">adulthivflowsheetFormController</prop>
@@ -20,7 +20,7 @@
     </bean>
     <!-- Controllers -->
 	
-    <bean id="adulthivflowsheetFormController" class="org.openmrs.module.rwandaadulthivflowsheet.web.controller.AdultHivFlowsheetFormController">
+    <bean id="adulthivflowsheetFormController" class="org.openmrs.module.rwandahivflowsheet.web.controller.AdultHivFlowsheetFormController">
     	<property name="commandName"><value>patient</value></property>
 		<property name="formView"><value>/module/@MODULE_ID@/adulthivflowsheet</value></property>
     </bean>

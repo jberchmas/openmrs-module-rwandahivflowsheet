@@ -3,7 +3,7 @@
 <!--  <!DOCTYPE module PUBLIC "-//OpenMRS//DTD OpenMRS Config 1.3//EN" "http://resources.openmrs.org/doctype/config-1.3.dtd"> -->
 <module configVersion="1.3">
 	
-	<id>rwandaadulthivflowsheet</id>
+	<id>rwandahivflowsheet</id>
 	<name>PIH Rwanda Adult HIV Flowsheet</name>
 	<version>0.4</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
@@ -11,7 +11,7 @@
 	<description>
 		PIH Rwanda Adult HIV Flowsheet
 	</description>
-	<activator>@MODULE_PACKAGE@.RwandaAdultHIVFlowsheetModuleActivator</activator>
+	<activator>@MODULE_PACKAGE@.RwandaHIVFlowsheetModuleActivator</activator>
 	
 	<require_version>1.6.1.12909</require_version>
 
@@ -26,7 +26,7 @@
 	</extension>
 	
 	<globalProperty>
-		<property>rwandaadulthivflowsheet.constants</property>
+		<property>rwandahivflowsheet.constants</property>
 		<defaultValue>
 OIS_THAT_ARE_STIS = 2c959aff-57cc-4e26-9853-db756bfbd818
 NORMAL = 3cd750a0-26fe-102b-80cb-0017a47871b2
@@ -235,49 +235,49 @@ ProgramId_AdultHIVProgram = cf7c0e30-2700-102b-80cb-0017a47871b2
 	</globalProperty>
 	
 	<globalProperty>
-		<property>rwandaadulthivflowsheet.Form_NewAllergy</property>
+		<property>rwandahivflowsheet.Form_NewAllergy</property>
 		<defaultValue></defaultValue>
 		<description>
 			form ID for htmlform for new allergies
 		</description>
 	</globalProperty>
 	<globalProperty>
-		<property>rwandaadulthivflowsheet.Form_NewHospitalisations</property>
+		<property>rwandahivflowsheet.Form_NewHospitalisations</property>
 		<defaultValue></defaultValue>
 		<description>
 			form ID for hospitalizations
 		</description>
 	</globalProperty>
 	<globalProperty>
-		<property>rwandaadulthivflowsheet.Form_NewOI</property>
+		<property>rwandahivflowsheet.Form_NewOI</property>
 		<defaultValue></defaultValue>
 		<description>
 			form ID for new IOs
 		</description>
 	</globalProperty>
 	<globalProperty>
-		<property>rwandaadulthivflowsheet.Form_NewProblem</property>
+		<property>rwandahivflowsheet.Form_NewProblem</property>
 		<defaultValue></defaultValue>
 		<description>
 			form ID for new Problems
 		</description>
 	</globalProperty>
 	<globalProperty>
-		<property>rwandaadulthivflowsheet.Form_NewVisit</property>
+		<property>rwandahivflowsheet.Form_NewVisit</property>
 		<defaultValue></defaultValue>
 		<description>
 			form ID for new visits
 		</description>
 	</globalProperty>
 	<globalProperty>
-		<property>rwandaadulthivflowsheet.Form_NewLab</property>
+		<property>rwandahivflowsheet.Form_NewLab</property>
 		<defaultValue></defaultValue>
 		<description>
 			form ID for new labs
 		</description>
 	</globalProperty>
 	<!--<globalProperty>
-		<property>rwandaadulthivflowsheet.Form_NewImage</property>
+		<property>rwandahivflowsheet.Form_NewImage</property>
 		<defaultValue></defaultValue>
 		<description>
 		</description>

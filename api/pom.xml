@@ -2,12 +2,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.openmrs.module</groupId>
-		<artifactId>rwandaadulthivflowsheet</artifactId>
+		<artifactId>rwandahivflowsheet</artifactId>
 		<version>0.4</version>
 	</parent>
-	<artifactId>rwandaadulthivflowsheet-api</artifactId>
+	<artifactId>rwandahivflowsheet-api</artifactId>
 	<packaging>jar</packaging>
-	<name>rwandaadulthivflowsheet API</name>
-	<description>API project for rwandaadulthivflowsheet</description>
+	<name>rwandahivflowsheet API</name>
+	<description>API project for rwandahivflowsheet</description>
 
 </project>

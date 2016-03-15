@@ -62,7 +62,7 @@
 						<openmrs:authentication/>
 						<c:if test="${not empty authenticatedUser}">
 							logged in as
-							<a href="javascript:showPopup('<spring:message code="rwandaadulthivflowsheet.userPrefs.title" javaScriptEscape="true"/>', openmrsContextPath + 'module/rwandaadulthivflowsheet/userPrefs.form', true);">
+							<a href="javascript:showPopup('<spring:message code="rwandahivflowsheet.userPrefs.title" javaScriptEscape="true"/>', openmrsContextPath + rwandahivflowsheet, true);">
 								${authenticatedUser.username}
 							</a>
 							<a href='${pageContext.request.contextPath}/logout'><spring:message code="header.logout" /></a>

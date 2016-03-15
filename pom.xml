@@ -2,18 +2,18 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.openmrs.module</groupId>
-	<artifactId>rwandaadulthivflowsheet</artifactId>
+	<artifactId>rwandahivflowsheet</artifactId>
 	<version>0.4</version>
 	<packaging>pom</packaging>
-	<name>rwandaadulthivflowsheet</name>
-	<description>Parent project for rwandaadulthivflowsheet</description>
+	<name>rwandahivflowsheet</name>
+	<description>Parent project for rwandahivflowsheet</description>
 
 	<url>http://openmrs.org</url>
 
 	<scm>
-		<connection>scm:git:git@github.com:PIH/openmrs-module-rwandaadulthivflowsheet.git</connection>
-		<developerConnection>scm:git:git@github.com:PIH/openmrs-module-rwandaadulthivflowsheet.git</developerConnection>
-		<url>https://github.com/PIH/openmrs-module-rwandaadulthivflowsheet/</url>
+		<connection>scm:git:git@github.com:PIH/openmrs-module-rwandahivflowsheet.git</connection>
+		<developerConnection>scm:git:git@github.com:PIH/openmrs-module-rwandahivflowsheet.git</developerConnection>
+		<url>https://github.com/PIH/openmrs-module-rwandahivflowsheet/</url>
         <tag>HEAD</tag>
     </scm>
 

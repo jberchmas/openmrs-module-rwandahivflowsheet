@@ -2,8 +2,8 @@
 
 <%@ page import="java.util.*" %>
 <%@ page import="org.openmrs.*" %>
-<%@ page import="org.openmrs.module.rwandaadulthivflowsheet.mapper.*" %>
-<%@ page import="org.openmrs.module.rwandaadulthivflowsheet.web.*" %>
+<%@ page import="org.openmrs.module.rwandahivflowsheet.mapper.*" %>
+<%@ page import="org.openmrs.module.rwandahivflowsheet.web.*" %>
 
 <%@ include file="templates/include.jsp"%>
 <%@ include file="templates/header.jsp"%>
@@ -12,29 +12,29 @@
 
 <c:set var="FormatDate_General" value="dd/MM/yyyy"/>
 <c:set var="DateTextPlaceHolder" value="____/____/______"/>
-<openmrs:globalProperty key="rwandaadulthivflowsheet.ConceptId_cd4count" var="ConceptId_cd4count"/>
-<openmrs:globalProperty key="rwandaadulthivflowsheet.ConceptId_ViralLoad" var="ConceptId_ViralLoad"/>
-<openmrs:globalProperty key="rwandaadulthivflowsheet.Form_NewAllergy" var="Form_NewAllergy"/>
-<openmrs:globalProperty key="rwandaadulthivflowsheet.Form_NewHospitalisations" var="Form_NewHospitalisations"/>
-<openmrs:globalProperty key="rwandaadulthivflowsheet.Form_NewOI" var="Form_NewOI"/>
-<openmrs:globalProperty key="rwandaadulthivflowsheet.Form_NewProblem" var="Form_NewProblem"/>
-<openmrs:globalProperty key="rwandaadulthivflowsheet.Form_NewVisit" var="Form_NewVisit"/>
-<openmrs:globalProperty key="rwandaadulthivflowsheet.Form_NewLab" var="Form_NewLab"/>
-<openmrs:globalProperty key="rwandaadulthivflowsheet.Form_NewImage" var="Form_NewImage"/>
+<openmrs:globalProperty key="rwandahivflowsheet.ConceptId_cd4count" var="ConceptId_cd4count"/>
+<openmrs:globalProperty key="rwandahivflowsheet.ConceptId_ViralLoad" var="ConceptId_ViralLoad"/>
+<openmrs:globalProperty key="rwandahivflowsheet.Form_NewAllergy" var="Form_NewAllergy"/>
+<openmrs:globalProperty key="rwandahivflowsheet.Form_NewHospitalisations" var="Form_NewHospitalisations"/>
+<openmrs:globalProperty key="rwandahivflowsheet.Form_NewOI" var="Form_NewOI"/>
+<openmrs:globalProperty key="rwandahivflowsheet.Form_NewProblem" var="Form_NewProblem"/>
+<openmrs:globalProperty key="rwandahivflowsheet.Form_NewVisit" var="Form_NewVisit"/>
+<openmrs:globalProperty key="rwandahivflowsheet.Form_NewLab" var="Form_NewLab"/>
+<openmrs:globalProperty key="rwandahivflowsheet.Form_NewImage" var="Form_NewImage"/>
 
 <openmrs:htmlInclude file="${pageContext.request.contextPath}/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js"/>
 <link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css" media="screen" />
 		
-<openmrs:htmlInclude file="${pageContext.request.contextPath}/moduleResources/rwandaadulthivflowsheet/flot/excanvas.min.js"/>
-<openmrs:htmlInclude file="${pageContext.request.contextPath}/moduleResources/rwandaadulthivflowsheet/flot/jquery.flot.min.js"/>
+<openmrs:htmlInclude file="${pageContext.request.contextPath}/moduleResources/rwandahivflowsheet/flot/excanvas.min.js"/>
+<openmrs:htmlInclude file="${pageContext.request.contextPath}/moduleResources/rwandahivflowsheet/flot/jquery.flot.min.js"/>
 
-<link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/moduleResources/rwandaadulthivflowsheet/adulthivflowsheet.css" media="screen" />
-<link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/moduleResources/rwandaadulthivflowsheet/adulthivflowsheetPrint.css" media="print" />
+<link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/moduleResources/rwandahivflowsheet/adulthivflowsheet.css" media="screen" />
+<link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/moduleResources/rwandahivflowsheet/adulthivflowsheetPrint.css" media="print" />
 
 
 
 <c:set var="formData" value="${formData}"/>
-<jsp:useBean id="formData" type="org.openmrs.module.rwandaadulthivflowsheet.web.model.AdultHivFlowsheetFormData" />
+<jsp:useBean id="formData" type="org.openmrs.module.rwandahivflowsheet.web.model.AdultHivFlowsheetFormData" />
 
 <div id="displayEncounterPopup">
 	<div id="displayEncounterPopupLoading"><spring:message code="general.loading"/></div>
@@ -286,7 +286,7 @@ function showEntryPopup(title, formId) {
 			</thead>
 			<tbody>
 				<c:forEach var="episode" items="${formData.tuberculosisEpisodes}">
-				<jsp:useBean id="episode" type="org.openmrs.module.rwandaadulthivflowsheet.impl.pih.TbEpisodeMapping" />
+				<jsp:useBean id="episode" type="org.openmrs.module.rwandahivflowsheet.impl.pih.TbEpisodeMapping" />
 					<tr>
 						<td class="section-emr"><c:if test="${!empty episode.episodeDate}">&#x2713;</c:if></td>
 						<td>
@@ -352,7 +352,7 @@ function showEntryPopup(title, formId) {
 			</thead>
 			<tbody>
 				<c:forEach var="prophylaxisepisode" items="${formData.prophylaxisEpisodes}">
-				<jsp:useBean id="prophylaxisepisode" type="org.openmrs.module.rwandaadulthivflowsheet.impl.pih.ProphylaxisMapping" />
+				<jsp:useBean id="prophylaxisepisode" type="org.openmrs.module.rwandahivflowsheet.impl.pih.ProphylaxisMapping" />
 					<tr>
 						<td class="section-emr"><c:if test="${!empty prophylaxisepisode.startDate}">&#x2713;</c:if><c:if test="${empty prophylaxisepisode.startDate}">&nbsp;</c:if></td>
 						<td>
@@ -465,7 +465,7 @@ function showEntryPopup(title, formId) {
 							<span class="value-data">${allergy.medicationsString}</span>
 						</td>
 						<td>
-							<jsp:useBean id="allergy" type="org.openmrs.module.rwandaadulthivflowsheet.mapper.Allergy" />
+							<jsp:useBean id="allergy" type="org.openmrs.module.rwandahivflowsheet.mapper.Allergy" />
 							<%= UIHelper.getCheckBoxWidget(allergy.isEffectAnaphylaxis(), "Anaphylaxie") %>
 							<%= UIHelper.getCheckBoxWidget(allergy.isEffectRashMinor(), "Eruption cutanée légère") %>
 							<%= UIHelper.getCheckBoxWidget(allergy.isEffectRashModerate(), "Eruption cutanée modérée") %>
@@ -528,7 +528,7 @@ function showEntryPopup(title, formId) {
 							</c:if>
 						</td>
 						<td>
-							<jsp:useBean id="hospitalization" type="org.openmrs.module.rwandaadulthivflowsheet.mapper.Hospitalization" />
+							<jsp:useBean id="hospitalization" type="org.openmrs.module.rwandahivflowsheet.mapper.Hospitalization" />
 							<%= UIHelper.getCheckBoxWidget(hospitalization.isMalaria(), "Paludisme") %>
 							<%= UIHelper.getCheckBoxWidget(hospitalization.isPneumonia(), "Pneumonie") %>
 							<%= UIHelper.getCheckBoxWidget(hospitalization.isGastroenteritis(), "Gastroentérite") %>
@@ -631,7 +631,7 @@ function showEntryPopup(title, formId) {
 							</c:if>
 						</td>
 						<td>
-							<jsp:useBean id="problem" type="org.openmrs.module.rwandaadulthivflowsheet.mapper.Problem" />
+							<jsp:useBean id="problem" type="org.openmrs.module.rwandahivflowsheet.mapper.Problem" />
 							<%= UIHelper.getCheckBoxWidget(problem.isAsthma(), "Asthme") %>
 							<%= UIHelper.getCheckBoxWidget(problem.isDiabetes(), "Diabète") %>
 							<%= UIHelper.getCheckBoxWidget(problem.isEpilepsy(), "Epilepsie") %>
@@ -703,7 +703,7 @@ function showEntryPopup(title, formId) {
 			</tfoot>
 			<tbody>
 				<c:forEach var="visitRow" items="${formData.obsMapper.visits}">
-					<jsp:useBean id="visitRow" type="org.openmrs.module.rwandaadulthivflowsheet.mapper.VisitGroup" />
+					<jsp:useBean id="visitRow" type="org.openmrs.module.rwandahivflowsheet.mapper.VisitGroup" />
 					<tr <c:if test="${not visitRow.emr}">class="empty-row"</c:if>>
 						<td class="section-emr"><c:if test="${visitRow.emr}">&#x2713;</c:if></td>
 						<td class="view-row" align="center">
@@ -801,7 +801,7 @@ function showEntryPopup(title, formId) {
 						<td><span class="value-data"><openmrs:format obsValue="${labRow.creat}"/></span></td>
 						<td><span class="value-data"><openmrs:format obsValue="${labRow.glucose}"/></span></td>
 						<td>
-							<jsp:useBean id="labRow" type="org.openmrs.module.rwandaadulthivflowsheet.mapper.LabGroup" />
+							<jsp:useBean id="labRow" type="org.openmrs.module.rwandahivflowsheet.mapper.LabGroup" />
 							<%= UIHelper.getCheckBoxWidget(labRow.isRprNegative(), "Nég") %>
 							<%= UIHelper.getCheckBoxWidget(labRow.isRprPositive(), "Pos") %>
 							<%= UIHelper.getCheckBoxWidget(labRow.isRprNotMade(), "Pas fait") %>
@@ -847,7 +847,7 @@ function showEntryPopup(title, formId) {
 							</c:if>
 						</td>
 						<td>
-							<jsp:useBean id="image" type="org.openmrs.module.rwandaadulthivflowsheet.mapper.Image" />
+							<jsp:useBean id="image" type="org.openmrs.module.rwandahivflowsheet.mapper.Image" />
 							<%= UIHelper.getCheckBoxWidget(image.isChestXRay(), "Cliche Thorax") %> 
 							<%= UIHelper.getCheckBoxWidget(image.isCTHead(), "CT head") %> 
 							<%= UIHelper.getCheckBoxWidget(image.isOther(), "Autre (spécifier):") %>
