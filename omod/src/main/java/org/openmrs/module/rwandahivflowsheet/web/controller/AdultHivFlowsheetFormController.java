@@ -6,7 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.openmrs.Patient;
-import org.openmrs.module.rwandahivflowsheet.web.MetadataHelper;
+import org.openmrs.module.rwandahivflowsheet.MetadataHelper;
 import org.openmrs.module.rwandahivflowsheet.web.model.AdultHivFlowsheetFormData;
 import org.springframework.validation.Errors;
 

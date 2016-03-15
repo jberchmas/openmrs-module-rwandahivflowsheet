@@ -37,6 +37,8 @@
 
 	<properties>
 		<openMRSVersion>1.9.9</openMRSVersion>
+        <heightweighttrackerVersion>1.0.3</heightweighttrackerVersion>
+        <htmlformentryVersion>2.6</htmlformentryVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<MODULE_ID>${project.parent.artifactId}</MODULE_ID>
 		<MODULE_NAME>Reporting</MODULE_NAME>
@@ -45,6 +47,20 @@
 	</properties>
 
 	<dependencies>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>heightweighttracker-api</artifactId>
+            <version>${heightweighttrackerVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>htmlformentry-api</artifactId>
+            <version>${htmlformentryVersion}</version>
+            <scope>provided</scope>
+        </dependency>
 
 		<!-- OpenMRS dependencies -->
 		<dependency>

@@ -1,5 +1,7 @@
 package org.openmrs.module.rwandahivflowsheet.impl.pih;
 
+import org.openmrs.module.rwandahivflowsheet.MetadataHelper;
+
 /**
  * Class mirrors the concept ids in the PIH Concept dictionary. NOTE: We would
  * want an abstraction layer, however, this is being done specifically for
@@ -429,7 +431,7 @@ public class ConceptDictionary {
 	
 
 	private ConceptDictionary() {
-	    org.openmrs.module.rwandahivflowsheet.web.MetadataHelper.setupConstants();
+	    MetadataHelper.setupConstants();
 	}
 
 }
