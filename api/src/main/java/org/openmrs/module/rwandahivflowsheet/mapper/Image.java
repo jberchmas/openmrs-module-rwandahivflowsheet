@@ -2,10 +2,10 @@ package org.openmrs.module.rwandahivflowsheet.mapper;
 
 import java.util.List;
 
+import org.openmrs.Concept;
 import org.openmrs.Obs;
 
 public interface Image extends BaseObs {
-
 
 	public abstract List<Obs> getComments();
 

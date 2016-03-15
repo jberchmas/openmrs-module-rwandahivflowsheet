@@ -29,14 +29,14 @@ public class RwandaHIVFlowsheetModuleActivator implements Activator {
 	 * @see org.openmrs.module.Activator#startup()
 	 */
 	public void startup() {
-		log.info("Starting Rwanda PIH Module");
+		log.info("Starting Rwanda PIH HIV Flowsheet Module");
 	}
 	
 	/**
 	 *  @see org.openmrs.module.Activator#shutdown()
 	 */
 	public void shutdown() {
-		log.info("Shutting down Rwanda PIH Module");
+		log.info("Shutting down Rwanda PIH HIV Flowsheet Module");
 	}
 	
 }

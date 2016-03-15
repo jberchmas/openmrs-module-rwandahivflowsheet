@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.openmrs.Concept;
+import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.rwandahivflowsheet.mapper.Image;
@@ -328,5 +330,15 @@ public class ImageMapping extends ObsMapping implements Comparable<ImageMapping>
 			return 1;
 		return getDate().compareTo(obj.getDate());
 	}
+	
+//	@Override
+//	public Encounter getEncounter() {
+//		if (this.getObs() != null  && this.getObs().getEncounter() != null  && this.getObs().getEncounter().getForm() != null){
+//					if (this.getObs().getEncounter().getForm().getFormId().equals(Integer.valueOf(ConceptDictionary.ADULT_IMAGE_FORM))
+//							|| this.getObs().getEncounter().getForm().getFormId().equals(Integer.valueOf(ConceptDictionary.PEDI_IMAGE_FORM)))
+//						return this.getObs().getEncounter();
+//		}
+//		return null;
+//	}
 
 }

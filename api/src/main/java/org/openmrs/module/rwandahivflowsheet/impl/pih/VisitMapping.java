@@ -2,6 +2,7 @@ package org.openmrs.module.rwandahivflowsheet.impl.pih;
 
 import java.util.Date;
 
+import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.module.rwandahivflowsheet.mapper.Visit;
 
@@ -17,13 +18,11 @@ public class VisitMapping extends ObsMapping implements Comparable<VisitMapping>
 	@Override
 	public Date getDate() {
 		
-//		if(getObs().getGroupMembers() != null) {
-//			for(Obs group : getObs().getGroupMembers()) {
-//				if(group.getConcept().getConceptId() == ConceptDictionary.DATE_OF_LABORATORY_TEST)
-//					if(group.getValueDatetime() != null)
-//						return group.getValueDatetime();
-//			}
-//		}
+		
+		if(getObs() != null && getObs().getConcept().getConceptId() == ConceptDictionary.WEIGHT_KG)
+				return getObs().getObsDatetime();
+			
+		
 		if (getObs().getEncounter() != null)
 			return getObs().getEncounter().getEncounterDatetime();
 		return getObsDate();
@@ -70,16 +69,78 @@ public class VisitMapping extends ObsMapping implements Comparable<VisitMapping>
 		return getObsOfType(ConceptDictionary.FUNCTIONAL_ABILITY_OF_THE_PATIENT);
 	}
 	
+	@Override
+	public Obs getHeight() {
+		return getObsOfType(ConceptDictionary.HEIGHT_CM);
+	}
+	
+	@Override
+	public Obs getZScoreHeight() {
+		return getObsOfType(ConceptDictionary.Z_SCORE_HEIGHT);
+	}
+	
+	@Override
+	public Obs getZScoreWeight() {
+		return getObsOfType(ConceptDictionary.Z_SCORE_WEIGHT);
+	}
+	
+	@Override
+	public Obs getHeightWeightPercentile() {
+		return getObsOfType(ConceptDictionary.HEIGHT_WEIGHT_PERCENTILE);
+	}
+	
+	@Override
+	public Obs getPatientInformed() {
+		return getObsOfType(ConceptDictionary.PATIENT_INFORMED);
+	}
+	
+	@Override
+	public Obs getNextVisit() {
+		return getObsOfType(ConceptDictionary.NEXT_VISIT);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.openmrs.module.rwandahivflowsheet.web.controller.VisitMapper#getOI()
 	 */
 	@Override
 	public Obs getOI() {
-		Obs obs = getObsOfType(ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION);
-		if(obs != null)
-			return obs;
 		
-		return getObsOfType(ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED);
+		Obs obs = getObsOfType(ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED_NON_CODED);
+		if (obs != null) {
+			return obs;
+		}
+		obs = getObsOfType(ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED);
+		if (obs != null) {
+			return obs;
+		}
+		
+		obs = getObsOfType(ConceptDictionary.Current_opportunistic_infection_construct);
+		if (obs != null) {
+			for (Obs o : obs.getGroupMembers()) {
+				if (o.getConcept().getConceptId().equals(ConceptDictionary.CURRENT_OI) && o.getValueCoded() != null
+				        && !o.getValueCoded().getConceptId().equals(ConceptDictionary.OTHER_NON_CODED)) {
+					return o;
+				}
+				if (o.getConcept().getConceptId().equals(ConceptDictionary.OPPORTUNISTIC_INFECTION_NON_CODED)) {
+					return o;
+				}
+			}
+		}
+		
+		obs = getObsOfType(ConceptDictionary.OPPORTUNISTIC_INFECTION_SET);
+		if (obs != null) {
+			for (Obs o : obs.getGroupMembers()) {
+				if (o.getConcept().getConceptId().equals(ConceptDictionary.CURRENT_OI) && o.getValueCoded() != null
+				        && !o.getValueCoded().getConceptId().equals(ConceptDictionary.OTHER_NON_CODED)) {
+					return o;
+				}
+				if (o.getConcept().getConceptId().equals(ConceptDictionary.OPPORTUNISTIC_INFECTION_NON_CODED)) {
+					return o;
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	/* (non-Javadoc)
@@ -87,6 +148,17 @@ public class VisitMapping extends ObsMapping implements Comparable<VisitMapping>
 	 */
 	@Override
 	public Obs getSTI() {
+		Obs obs = getObsOfType(ConceptDictionary.STI_INFECTION);
+		if(obs != null)
+		{
+			return obs;
+		}
+		
+		obs = getObsOfType(ConceptDictionary.STI_INFECTION_NON_CODED);
+		if(obs != null)
+		{
+			return obs;
+		}
 		return getObsOfType(ConceptDictionary.SEXUALLY_TRANSMITTED_INFECTION_SYMPTOMS_COMMENT);
 	}
 	
@@ -154,4 +226,14 @@ public class VisitMapping extends ObsMapping implements Comparable<VisitMapping>
 			return 1;
 		return getDate().compareTo(obj.getDate());
 	}
+	
+//	@Override
+//	public Encounter getEncounter() {
+//		if (this.getObs() != null  && this.getObs().getEncounter() != null  && this.getObs().getEncounter().getForm() != null){
+//					if (this.getObs().getEncounter().getForm().getFormId().equals(Integer.valueOf(ConceptDictionary.ADULT_VISIT_FORM))
+//							|| this.getObs().getEncounter().getForm().getFormId().equals(Integer.valueOf(ConceptDictionary.PEDI_VISIT_FORM)))
+//						return this.getObs().getEncounter();
+//		}
+//		return null;
+//	}
 }

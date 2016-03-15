@@ -1,17 +1,59 @@
 package org.openmrs.module.rwandahivflowsheet.extension.html;
 
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.Patient;
+import org.openmrs.PatientProgram;
+import org.openmrs.Program;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.web.extension.LinkExt;
 
 
 public class RwandaAdultHIVFlowsheetFormItem extends LinkExt {
-	
+
+	private final static Log log = LogFactory.getLog(RwandaAdultHIVFlowsheetFormItem.class);
 	
 	/**
 	 * @return the message code for this link
 	 */
 	@Override
 	public String getLabel() {
-		return "Adult HIV Flowsheet";
+		String ret = "";
+		
+		if (this.getParameterMap() != null && this.getParameterMap().size() > 0){
+		    String patientId = this.getParameterMap().get("patientId");
+		    Patient p = Context.getPatientService().getPatient(Integer.valueOf(patientId));
+			String gp = Context.getAdministrationService().getGlobalProperty("rwandaadulthivflowsheet.adultShowPatientChartLinksIfInProgram");
+			boolean programFound = false;
+			if (gp != null && !gp.equals("")){
+				String[] gpSplit = gp.split(",");
+				for (String str : gpSplit){
+					Program prog = Context.getProgramWorkflowService().getProgramByUuid(str);
+					if (prog == null)
+						prog = Context.getProgramWorkflowService().getProgramByName(str);
+					if (prog == null){
+						try {
+							prog = Context.getProgramWorkflowService().getProgram(Integer.valueOf(str));
+						} catch (Exception ex){}
+					}
+					
+					if (prog != null){
+						List<PatientProgram> programs = Context.getProgramWorkflowService().getPatientPrograms(p, prog, null, null, null, null, false);
+						 if (programs != null && programs.size() > 0){ 
+			    	            return "Adult HIV Flowsheet";
+						 } 
+						 programFound = true;
+					}
+						
+				}
+			}
+			if (!programFound)
+				log.warn("RwandaHivFlowsheet module: No valid programs were found in the global property rwandaadulthivflowsheet.adultShowPatientChartLinksIfInProgram.  This means that the HIV flowsheets will be available for NO patients.");
+		}
+		
+		return ret;
 	}
 	
 	/**

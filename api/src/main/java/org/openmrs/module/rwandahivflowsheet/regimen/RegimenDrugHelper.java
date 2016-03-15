@@ -208,7 +208,103 @@ public class RegimenDrugHelper {
 		return foundD4T && found3TC && foundNVP;
 	}
 
-    
+	public boolean isABC_3TC_NVP(List<DrugOrder> drugOrders) {
+		if(drugOrders == null || drugOrders.size() == 0)
+			return false;
+		
+		boolean foundABC = false;
+		boolean found3TC = false;
+		boolean foundNVP = false;
+		for(DrugOrder drugOrder : drugOrders) {
+			foundABC |= containsABC(drugOrder);
+			found3TC |= contains3TC(drugOrder);
+			foundNVP |= containsNVP(drugOrder);
+		}
+
+		return foundABC && found3TC && foundNVP;
+	}
+	
+	public boolean isABC_3TC_EFV(List<DrugOrder> drugOrders) {
+		if(drugOrders == null || drugOrders.size() == 0)
+			return false;
+		
+		boolean foundABC = false;
+		boolean found3TC = false;
+		boolean foundEFV = false;
+		for(DrugOrder drugOrder : drugOrders) {
+			foundABC |= containsABC(drugOrder);
+			found3TC |= contains3TC(drugOrder);
+			foundEFV |= containsEFV(drugOrder);
+		}
+
+		return foundABC && found3TC && foundEFV;
+	}
+	
+	public boolean isABC_3TC_LPVr(List<DrugOrder> drugOrders) {
+		if(drugOrders == null || drugOrders.size() == 0)
+			return false;
+		
+		boolean foundABC = false;
+		boolean found3TC = false;
+		boolean foundLPVr = false;
+		for(DrugOrder drugOrder : drugOrders) {
+			foundABC |= containsABC(drugOrder);
+			found3TC |= contains3TC(drugOrder);
+			foundLPVr |= containsLPVr(drugOrder);
+		}
+
+		return foundABC && found3TC && foundLPVr;
+	}
+	
+	public boolean isD4T_3TC_LPVr(List<DrugOrder> drugOrders) {
+		if(drugOrders == null || drugOrders.size() == 0)
+			return false;
+		
+		boolean foundD4T = false;
+		boolean found3TC = false;
+		boolean foundLPVr = false;
+		for(DrugOrder drugOrder : drugOrders) {
+			foundD4T |= containsD4T(drugOrder);
+			found3TC |= contains3TC(drugOrder);
+			foundLPVr |= containsLPVr(drugOrder);
+		}
+
+		return foundD4T && found3TC && foundLPVr;
+	}
+	
+	private boolean containsLPVr(DrugOrder drugOrder) {
+	    int val = drugOrder.getConcept().getConceptId().intValue();
+	    if (       val == ConceptDictionary.DRUG_LOPINAVIR_AND_RITONAVIR
+                || val == ConceptDictionary.DRUG_DIDANOSINE_ABACAVIR_LOPINAVIR_RITONAVIR
+                || val == ConceptDictionary.DRUG_DDI_TDF_LOPR
+                || val == ConceptDictionary.DRUG_DDI_3TC_LOPR
+                ||val == ConceptDictionary.DRUG_DDI_AZT_LOPR
+                || val == ConceptDictionary.DRUG_TDF_ABC_LOPR
+                || val == ConceptDictionary.DRUG_TDF_3TC_LOPR
+                || val == ConceptDictionary.DRUG_TDF_AZT_LOPR
+                || val == ConceptDictionary.DRUG_AZT_3TC_LORR
+                 ) {
+             return true;
+	    }
+		return false;
+	}
+	
+	public boolean isAZT_3TC_LPVr(List<DrugOrder> drugOrders) {
+		if(drugOrders == null || drugOrders.size() == 0)
+			return false;
+		
+		boolean foundAZT = false;
+		boolean found3TC = false;
+		boolean foundLPVr = false;
+		for(DrugOrder drugOrder : drugOrders) {
+			foundAZT |= containsAZT(drugOrder);
+			found3TC |= contains3TC(drugOrder);
+			foundLPVr |= containsLPVr(drugOrder);
+		}
+
+		return foundAZT && found3TC && foundLPVr;
+	}
+	
 	private boolean containsDDI(DrugOrder drugOrder) {
 	    int val = drugOrder.getConcept().getConceptId().intValue();
 		if (val == ConceptDictionary.DRUG_DDI

@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.openmrs.Concept;
+import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.module.rwandahivflowsheet.mapper.Hospitalization;
 
@@ -383,6 +384,16 @@ public class HospitalizationMapping extends ObsMapping implements Comparable<Hos
 			return 1;
 		return getAdmittanceDate().compareTo(obj.getAdmittanceDate());
 	}
+	
+//	@Override
+//	public Encounter getEncounter() {
+//		if (this.getObs() != null  && this.getObs().getEncounter() != null  && this.getObs().getEncounter().getForm() != null){
+//					if (this.getObs().getEncounter().getForm().getFormId().equals(Integer.valueOf(ConceptDictionary.ADULT_HOSPITALISATION_FORM))
+//							|| this.getObs().getEncounter().getForm().getFormId().equals(Integer.valueOf(ConceptDictionary.PEDI_HOSPITALISATION_FORM)))
+//						return this.getObs().getEncounter();
+//		}
+//		return null;
+//	}
 
 
 }

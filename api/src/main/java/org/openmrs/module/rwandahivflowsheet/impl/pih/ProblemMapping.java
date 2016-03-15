@@ -1,15 +1,24 @@
 package org.openmrs.module.rwandahivflowsheet.impl.pih;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
+import org.openmrs.Encounter;
 import org.openmrs.Obs;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.rwandahivflowsheet.mapper.Problem;
 
 public class ProblemMapping extends ObsMapping implements Comparable<ProblemMapping>, Problem {
 	
 	public Obs diagnosisOther;
 	public List<Obs> diagnoses = new ArrayList<Obs>();
+	
+	private Date obsDate = null;
 	
 	public ProblemMapping(Obs obs) {
 		super(obs);
@@ -20,13 +29,24 @@ public class ProblemMapping extends ObsMapping implements Comparable<ProblemMapp
 				}	
 				if (!group.isVoided() && group.getConcept().getConceptId().equals(ConceptDictionary.CHRONIC_CARE_DIAGNOSIS) && group.getValueCoded() != null){
 					diagnoses.add(group);
-				}	
+				}
+				if(!group.isVoided() && group.getConcept().getConceptId().equals(ConceptDictionary.PREVIOUS_DIAGNOSIS_DATE)){
+					obsDate = group.getValueDatetime();
+				}
 					
 			}			
 		} else if (obs.getConcept() != null && obs.getValueCoded() != null && obs.getConcept().getConceptId().equals(ConceptDictionary.CHRONIC_CARE_DIAGNOSIS)) {
 			diagnoses.add(obs);
 		}	else if (obs.getConcept() != null && obs.getValueCoded() != null && obs.getConcept().getConceptId().equals(ConceptDictionary.PREVIOUS_DIAGNOSIS)) {
 		    diagnoses.add(obs);
+		    List<Obs> dateObs = Context.getObsService().getObservationsByPersonAndConcept(obs.getPerson(), Context.getConceptService().getConcept(ConceptDictionary.PREVIOUS_DIAGNOSIS_DATE));
+		    for(Obs o: dateObs)
+		    {
+		    	if(o.getObsGroup() != null && o.getObsGroup().equals(obs.getObsGroup()))
+		    	{
+		    		obsDate = o.getValueDatetime();		
+		    	}
+		    }
 		}			
 	}
 	
@@ -38,19 +58,10 @@ public class ProblemMapping extends ObsMapping implements Comparable<ProblemMapp
 		if(!isEmr())
 			return null;
 		
-// MLH No non-voided instances of this exist in the DB
-//		if(obs.getConcept().getConceptId() == AdultHivFlowsheetFormData.ConceptId_PatientHadDiabities) {
-//			if(obs.getValueCoded().getConceptId() == 1065)
-//				return obs;
-//		}
 		
 		if(getObs().getConcept().getConceptId().equals(ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED)) {
 			if(getObs().getValueCoded().getConceptId().equals(ConceptDictionary.PATIENT_HAS_DIABETES) ||
-					getObs().getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_CARDIOVASCULAR_DISEASE)
-				    ||   getObs().getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_CEREBRAL_LYMPHOMA)			
-				    ||   getObs().getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_DEPRESSION)
-				    ||   getObs().getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_KAPOSIS_SARCOMA)
-				    ||   getObs().getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_NEUROLOGICAL_DEFICIT))
+					getObs().getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_CARDIOVASCULAR_DISEASE))
 				return getObs();
 		}
 		
@@ -63,8 +74,6 @@ public class ProblemMapping extends ObsMapping implements Comparable<ProblemMapp
 			return getObs();
 		}
 
-//		if(obs.getConcept().getConceptId() == AdultHivFlowsheetFormData.ConceptId_Diabeties)
-//			return obs;
 			
 		if(getObs().getGroupMembers() == null)
 			return null;
@@ -98,8 +107,7 @@ public class ProblemMapping extends ObsMapping implements Comparable<ProblemMapp
 	//HACK
 	public boolean getShowOther(){
 		if (getDiagnosis() != null && getDiagnosis().getValueCoded() != null &&
-				((getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.OTHER_NON_CODED)
-				|| 	getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.ASTHMA)
+				((getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.ASTHMA)
 				|| getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.DIABETES)
 				|| getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.EPILEPSY)
 				|| getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.HEART_FAILURE)
@@ -119,18 +127,36 @@ public class ProblemMapping extends ObsMapping implements Comparable<ProblemMapp
 	}
 
 	public boolean getDoNotShow(){
-		if (getDiagnosis() != null && getDiagnosis().getValueCoded() != null && !((
-				getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_CARDIOVASCULAR_DISEASE)
-			    ||   getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_CEREBRAL_LYMPHOMA)			
-			    ||   getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_DEPRESSION)
-			    ||   getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_KAPOSIS_SARCOMA)
-			    ||   getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_NEUROLOGICAL_DEFICIT)
-			    ||    getDiagnosis().getConcept().getConceptId().equals(ConceptDictionary.CHRONIC_CARE_DIAGNOSIS_OTHER)
-			    ||   getDiagnosis().getConcept().getConceptId().equals(ConceptDictionary.CHRONIC_CARE_DIAGNOSIS)
-			    ||   getDiagnosis().getConcept().getConceptId().equals(ConceptDictionary.PREVIOUS_DIAGNOSIS)
-				)))
-			return true;
-		return false;
+		if(getDiagnosis() != null && getDiagnosis().getValueCoded() != null)
+		{
+			if(getChronicConditions().contains(getDiagnosis().getValueCoded().getConceptId()))
+			{
+				return false;
+			}
+		}
+		if(getDiagnosis() != null && getDiagnosis().getConcept().getConceptId().equals(ConceptDictionary.CHRONIC_CARE_DIAGNOSIS_OTHER))
+		{
+			return false;
+		}
+		if(getDiagnosis() != null && getDiagnosis().getConcept().getConceptId().equals(ConceptDictionary.CHRONIC_CARE_DIAGNOSIS))
+		{
+			return false;
+		}
+		if(getDiagnosis() == null)
+		{
+			return false;
+		}
+		return true;
+	}
+	
+	public static Set<Integer> getChronicConditions()
+	{
+		Set<Integer> ret = new HashSet<Integer>();
+		Concept c = Context.getConceptService().getConcept(ConceptDictionary.CHRONIC_CARE_DIAGNOSIS);
+		for (ConceptAnswer ca : c.getAnswers()){
+			ret.add(ca.getAnswerConcept().getConceptId());
+		}
+		return ret;
 	}
 
 	
@@ -281,11 +307,11 @@ public class ProblemMapping extends ObsMapping implements Comparable<ProblemMapp
 		if(getObs() == null || other.getObs() == null)
 			return false;
 		//commented out because if chronic, only show once
-//		if(getObsDate() == null || other.getObsDate() == null || !getObsDate().equals(other.getObsDate()))
-//			return false;
-
-		if(areObsDifferentValue(getDiagnosis(), other.getDiagnosis()))
+		if(getObsDate() == null || other.getObsDate() == null || !getObsDate().equals(other.getObsDate()))
 			return false;
+
+//		if(areObsDifferentValue(getDiagnosis(), other.getDiagnosis()))
+//			return false;
 
 //		if(getComments() == null ^ other.getComments() == null)
 //			return false;
@@ -307,5 +333,25 @@ public class ProblemMapping extends ObsMapping implements Comparable<ProblemMapp
 			return 1;
 		return getObsDate().compareTo(obj.getObsDate());
 	}
+	
+	public Date getObsDate() {
+		
+		if(obsDate != null)
+		{
+			return obsDate;
+		}
+		return super.getObsDate();
+		
+	}
+	
+//	@Override
+//	public Encounter getEncounter() {
+//		if (this.getObs() != null  && this.getObs().getEncounter() != null  && this.getObs().getEncounter().getForm() != null){
+//					if (this.getObs().getEncounter().getForm().getFormId().equals(Integer.valueOf(ConceptDictionary.ADULT_PROBLEM_FORM))
+//							|| this.getObs().getEncounter().getForm().getFormId().equals(Integer.valueOf(ConceptDictionary.PEDI_PROBLEM_FORM)))
+//						return this.getObs().getEncounter();
+//		}
+//		return null;
+//	}
 
 }

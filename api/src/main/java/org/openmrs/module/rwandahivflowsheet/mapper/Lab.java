@@ -1,6 +1,7 @@
 package org.openmrs.module.rwandahivflowsheet.mapper;
 
 import java.util.Date;
+import java.util.List;
 
 import org.openmrs.Obs;
 
@@ -30,9 +31,11 @@ public interface Lab extends BaseObs {
 
 	public abstract Obs getRpr();
 
-	public abstract Obs getOtherLabTestName();
+	public abstract Obs getCd4Percentage();
 
-	public abstract Obs getOtherLabTestResult();
+	public abstract List<Obs> getOtherLabTestName();
+
+	public abstract List<Obs> getOtherLabTestResult();
 
 	public abstract Obs getCd4();
 

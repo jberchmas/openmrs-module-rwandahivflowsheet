@@ -8,11 +8,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -27,6 +29,8 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientProgram;
+import org.openmrs.Program;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
@@ -35,7 +39,9 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
+import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.rwandahivflowsheet.impl.pih.ConceptDictionary;
 import org.openmrs.util.OpenmrsUtil;
 
 public class FormDataModel {
@@ -97,6 +103,8 @@ public class FormDataModel {
 	private EncounterService encounterService;
 	
 	private Locale locale = null;
+	
+	private List<Encounter> encounterTypeEncs = new ArrayList<Encounter>();
 	
 	public FormDataModel() {
 		this.patientSetService = Context.getPatientSetService();
@@ -350,6 +358,9 @@ public class FormDataModel {
 		catch (NumberFormatException e) {
 			c = conceptService.getConceptByName(conceptName);
 		}
+		
+		if (c == null)
+			c = conceptService.getConceptByUuid(conceptName);
 		
 		if (c == null)
 			throw new APIException("A Concept with name or id '" + conceptName + "' was not found");
@@ -752,6 +763,17 @@ public class FormDataModel {
 	/**
 	 * Get the first occurrence of matching <code>obs.concept</code> out of the patient's encounters
 	 * 
+	 * @param conceptIg
+	 * @return Object the first occurrence of the observation concept name of the patient's
+	 *         encounters
+	 */
+	public Object getFirstObs(int conceptId) throws Exception {
+		return getFirstObs(getConcept(Integer.toString(conceptId)));
+	}
+	
+	/**
+	 * Get the first occurrence of matching <code>obs.concept</code> out of the patient's encounters
+	 * 
 	 * @param conceptName
 	 * @return Object the first occurrence of the observation concept name of the patient's
 	 *         encounters
@@ -1025,5 +1047,115 @@ public class FormDataModel {
 			return o.toString();
 	}
 	
+	/**
+	 * This builds the list of local ID strings to show in the patient header.  
+	 * For IMB for example, the global property below will say, 'show the primary care id type, and the imb id type'.
+	 * @return
+	 */
+	public String getOtherIdentifiers(){
+		String ret = "";
+		String gp = Context.getAdministrationService().getGlobalProperty("rwandahivflowsheet.ShowOtherIdentifierTypes");
+		if (gp != null && !gp.equals("")){
+			String[] gpSplit = gp.split(",");
+			for (String str : gpSplit){
+				PatientIdentifierType pit = patientService.getPatientIdentifierTypeByUuid(str);
+				if (pit == null)
+					patientService.getPatientIdentifierTypeByName(str);
+				if (pit == null){
+					try{
+						pit = patientService.getPatientIdentifierType(Integer.valueOf(str));
+					} catch (Exception ex){}
+				}
+				
+				//OK, we have patientIdentifierType; add to ret
+				if (pit != null && this.getPatient() != null){
+					for (PatientIdentifier pi : this.getPatient().getActiveIdentifiers()){
+						ret += "<span class=\"value-label-big\"> "  +  pit.getName() +  "</span><span class=\"value-data-big\"> " + pi.getIdentifier() + "   </span> &nbsp;&nbsp;";
+					}
+				}
+			}
+		}
+		return ret;
+	}
+	
+	
+	/**
+	 * @param programId
+	 * @param ppMap
+	 */
+	private void getProgramHistoryHelper(Integer programId, Map<Date, Set<PatientProgram>> ppMap){
+		if (programId != null){
+			ProgramWorkflowService pws = Context.getProgramWorkflowService();
+			Program prog = pws.getProgram(programId);
+			List<PatientProgram> ppList = pws.getPatientPrograms(this.getPatient(), prog, null, null, null, null, false);
+			if (ppList != null && ppList.size() > 0){
+				for (PatientProgram pp : ppList){
+					Set<PatientProgram> list;
+					if(pp.getDateEnrolled() != null)
+					{
+						if (ppMap.get(pp.getDateEnrolled()) == null){
+							list = new HashSet<PatientProgram>();
+						} else {
+							list = ppMap.get(pp.getDateEnrolled());
+						}
+						list.add(pp);
+						ppMap.put(pp.getDateEnrolled(), list);
+					}
+				}	
+			}
+		}
+	}
+	
+	/**
+	 * This will build the program history for the Date d’enrôlement in the patient header.
+	 * @return
+	 */
+	public String getProgramHistory(){
+		String ret = "";
+		if (patient != null){
+			//tree map used to naturally order by startDate asc
+			Map<Date, Set<PatientProgram>> ppMap = new TreeMap<Date, Set<PatientProgram>>();
 
+			getProgramHistoryHelper(ConceptDictionary.ProgramId_PediHIVProgram, ppMap);
+			getProgramHistoryHelper(ConceptDictionary.ProgramId_AdultHIVProgram, ppMap);
+			getProgramHistoryHelper(ConceptDictionary.ProgramId_Exposed_Infant_mother, ppMap);
+			getProgramHistoryHelper(ConceptDictionary.ProgramId_PMTCT_mother, ppMap);
+
+
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			for (Map.Entry<Date, Set<PatientProgram>> e : ppMap.entrySet()){
+				Set<PatientProgram> ppList = e.getValue();
+				for (PatientProgram pp : ppList){
+					ret += " <span class=\"value-date\"> " + pp.getProgram().getName() + ": </span> <span class=\"value-date\"> " + sdf.format(e.getKey()) + " |</span> ";
+				}
+			}
+			
+		}
+
+		//remove the last instance of pipe
+		if (ret.contains("|")){
+			int pos = ret.lastIndexOf("|");
+			String root = ret.substring(0,pos);
+			String end = ret.substring(pos + 1, ret.length());
+			ret = root + end;
+		}
+		return ret;
+	}
+	
+	public List<Encounter> getEncounterTypeEncs(){
+		//if already initialized...
+		if (encounterTypeEncs.size() > 0)
+			return encounterTypeEncs;
+		if (this.patient != null){
+			List<EncounterType> etList = new ArrayList<EncounterType>();
+			if (ConceptDictionary.ADULT_FLOWSHEET_ENCOUNTER_ID != null)
+				etList.add(Context.getEncounterService().getEncounterType(ConceptDictionary.ADULT_FLOWSHEET_ENCOUNTER_ID));
+			if (ConceptDictionary.PEDI_FLOWSHEET_ENCOUNTER_ID != null)
+				etList.add(Context.getEncounterService().getEncounterType(ConceptDictionary.PEDI_FLOWSHEET_ENCOUNTER_ID));
+			List<Encounter> encs =  Context.getEncounterService().getEncounters(patient, null, null, null, null, etList, null, false);
+			this.encounterTypeEncs = encs;
+			return this.encounterTypeEncs;
+		}
+		return new ArrayList<Encounter>();
+	}
 }

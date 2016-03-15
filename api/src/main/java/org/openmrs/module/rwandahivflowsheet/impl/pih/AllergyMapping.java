@@ -62,7 +62,7 @@ public class AllergyMapping extends ObsMapping implements Comparable<AllergyMapp
 					}
 	
 					if(group.getConcept().getConceptId().equals(ConceptDictionary.ADVERSE_EFFECT)) {
-						if(group.getValueCoded() != null )
+						if(group.getValueCoded() != null)
 							effectsCodedMap.put(group.getValueCoded().getConceptId(), group);
 					} else if(group.getConcept().getConceptId().equals(ConceptDictionary.ADVERSE_EFFECT_NONCODED)) {
 						effectsNonCodedList.add(group);
@@ -161,6 +161,7 @@ public class AllergyMapping extends ObsMapping implements Comparable<AllergyMapp
 	}
 	
 	public boolean getDoNotShow() {
+		
 		return getEffectsCoded().containsKey(ConceptDictionary.NONE);
 	}
 
@@ -406,5 +407,15 @@ public class AllergyMapping extends ObsMapping implements Comparable<AllergyMapp
 			return 1;
 		return getAdverseEffectDate().compareTo(obj.getAdverseEffectDate());
 	}
+	
+//	@Override
+//	public Encounter getEncounter() {
+//		if (this.getObs() != null  && this.getObs().getEncounter() != null  && this.getObs().getEncounter().getForm() != null){
+//					if (this.getObs().getEncounter().getForm().getFormId().equals(Integer.valueOf(ConceptDictionary.ADULT_ALLERGY_FORM))
+//							|| this.getObs().getEncounter().getForm().getFormId().equals(Integer.valueOf(ConceptDictionary.PEDI_ALLERGY_FORM)))
+//						return this.getObs().getEncounter();
+//		}
+//		return null;
+//	}
 
 }

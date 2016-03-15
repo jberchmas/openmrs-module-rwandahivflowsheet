@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -22,17 +23,22 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.heightweighttracker.mapper.BMIForAge;
+import org.openmrs.module.heightweighttracker.mapper.WeightForHeight;
 import org.openmrs.module.rwandahivflowsheet.mapper.Allergy;
+import org.openmrs.module.rwandahivflowsheet.mapper.HeightForAge;
 import org.openmrs.module.rwandahivflowsheet.mapper.Hospitalization;
 import org.openmrs.module.rwandahivflowsheet.mapper.Image;
+import org.openmrs.module.rwandahivflowsheet.mapper.ImagePedi;
 import org.openmrs.module.rwandahivflowsheet.mapper.Lab;
 import org.openmrs.module.rwandahivflowsheet.mapper.LabGroup;
 import org.openmrs.module.rwandahivflowsheet.mapper.OI;
 import org.openmrs.module.rwandahivflowsheet.mapper.Problem;
 import org.openmrs.module.rwandahivflowsheet.mapper.Visit;
 import org.openmrs.module.rwandahivflowsheet.mapper.VisitGroup;
+import org.openmrs.module.rwandahivflowsheet.mapper.WeightForAge;
 
-public class AdultHIVFlowsheetObsMapper {
+public class HIVFlowsheetObsMapper {
 	
 	private static final int MIN_IMAGE_EXTRA_ROWS = 2;
 
@@ -73,16 +79,59 @@ public class AdultHIVFlowsheetObsMapper {
 	private Patient patient;
 
 
-	public AdultHIVFlowsheetObsMapper(Patient patient) {
+	public HIVFlowsheetObsMapper(Patient patient) {
 		this.patient = patient;
 	}
 	
 	public Collection<Lab> getCd4ObsList() {
 		Integer[] labConceptIds = {	ConceptDictionary.CD4_COUNT };
+		
+		Date birthDate = patient.getBirthdate();
 
 		Collection<LabMapping> collection = getObsView(labConceptIds, LabMapping.class);
 
-    	return new ArrayList<Lab>(collection);
+		//need to filter out cd4 count before the age of 5
+		List<LabMapping> filteredList = new ArrayList<LabMapping>();
+		for(LabMapping lm: collection)
+		{
+			int months = calculateMonthsDifference(lm.getObsDate(), birthDate);
+			if(months > 59)
+			{
+				filteredList.add(lm);
+			}
+		}
+		
+    	return new ArrayList<Lab>(filteredList);
+/*
+    	List<Map<Integer, Obs>> map = sortAndGroupObsByDate(getObsList(ConceptDictionary.CD4_COUNT));
+		List<Obs> sortedList = new LinkedList<Obs>();
+		for(Map<Integer, Obs> item : map) {
+			for(Obs obs : item.values())
+				sortedList.add(obs);
+		}
+		return sortedList;
+*/
+	}
+	
+	public Collection<Lab> getCd4PercentObsList() {
+		Integer[] labConceptIds = {	ConceptDictionary.CD4_PERCENTAGE };
+		
+		Date birthDate = patient.getBirthdate();
+
+		Collection<LabMapping> collection = getObsView(labConceptIds, LabMapping.class);
+
+		//need to filter out cd4 count before the age of 5
+		List<LabMapping> filteredList = new ArrayList<LabMapping>();
+		for(LabMapping lm: collection)
+		{
+			int months = calculateMonthsDifference(lm.getObsDate(), birthDate);
+			if(months < 61)
+			{
+				filteredList.add(lm);
+			}
+		}
+		
+    	return new ArrayList<Lab>(filteredList);
 /*
     	List<Map<Integer, Obs>> map = sortAndGroupObsByDate(getObsList(ConceptDictionary.CD4_COUNT));
 		List<Obs> sortedList = new LinkedList<Obs>();
@@ -119,12 +168,281 @@ public class AdultHIVFlowsheetObsMapper {
 
 		Obs latestHeight = null;
 		for(Obs obs : obsList) {
-			latestHeight = obs;
+			if(latestHeight == null || latestHeight.getObsDatetime().before(obs.getObsDatetime()))
+			{
+				latestHeight = obs;
+			}
 		}
 		return latestHeight;
 	}
+	
+	public List<HeightForAge> getHeightForAge()
+	{
+		List<HeightForAge> heightForAge = new ArrayList<HeightForAge>();
+		Date birthDate = patient.getBirthdate();
+		
+		Collection<Obs> heightObs = getHeightObsList();
+		if(heightObs != null)
+		{
+			for(Obs o: heightObs)
+			{
+				int months = calculateMonthsDifference(o.getObsDatetime(), birthDate);
+				if(months > 59 && months < 230)
+				{
+					HeightForAge hfa = new HeightForAge();
+					hfa.setAgeInMonths(months);
+					hfa.setHeightInCM(o.getValueNumeric().intValue());
+					heightForAge.add(hfa);
+				}
+			}
+		}
+		
+		return heightForAge;
+	}
+	
+	public List<WeightForAge> getWeightForAgeFromBirth()
+	{
+		List<WeightForAge> weightForAge = new ArrayList<WeightForAge>();
+		Date birthDate = patient.getBirthdate();
+		
+		Collection<Obs> weightObs = getWeightObsList();
+		if(weightObs != null)
+		{
+			for(Obs o: weightObs)
+			{
+				int days = calculateDaysDifference(o.getObsDatetime(), birthDate);
+				if(days < 1827)
+				{
+					WeightForAge wfa = new WeightForAge();
+					wfa.setAgeInDays(days);
+					wfa.setWeightInKG(o.getValueNumeric().intValue());
+					weightForAge.add(wfa);
+				}
+			}
+		}
+		
+		return weightForAge;
+	}
+	
+	public List<WeightForAge> getWeightForAgeTill20()
+	{
+		List<WeightForAge> weightForAge = new ArrayList<WeightForAge>();
+		Date birthDate = patient.getBirthdate();
+		
+		Collection<Obs> weightObs = getWeightObsList();
+		if(weightObs != null)
+		{
+			for(Obs o: weightObs)
+			{
+				int months = calculateMonthsDifference(o.getObsDatetime(), birthDate);
+				if(months > 23 && months < 241)
+				{
+					WeightForAge wfa = new WeightForAge();
+					wfa.setAgeInMonths(months);
+					wfa.setWeightInKG(o.getValueNumeric().intValue());
+					weightForAge.add(wfa);
+				}
+			}
+		}
+		
+		return weightForAge;
+	}
+	
+	public List<WeightForAge> getWeightForAge()
+	{
+		List<WeightForAge> weightForAge = new ArrayList<WeightForAge>();
+		Date birthDate = patient.getBirthdate();
+		
+		Collection<Obs> weightObs = getWeightObsList();
+		if(weightObs != null)
+		{
+			for(Obs o: weightObs)
+			{
+				int months = calculateMonthsDifference(o.getObsDatetime(), birthDate);
+				if(months > 59 && months < 230)
+				{
+					WeightForAge wfa = new WeightForAge();
+					wfa.setAgeInMonths(months);
+					wfa.setWeightInKG(o.getValueNumeric().intValue());
+					weightForAge.add(wfa);
+				}
+			}
+		}
+		
+		return weightForAge;
+	}
+	
+	
+	public List<HeightForAge> getLengthForAge()
+	{
+		List<HeightForAge> heightForAge = new ArrayList<HeightForAge>();
+		Date birthDate = patient.getBirthdate();
+		
+		Collection<Obs> heightObs = getHeightObsList();
+		if(heightObs != null)
+		{
+			for(Obs o: heightObs)
+			{
+				int days = calculateDaysDifference(o.getObsDatetime(), birthDate);
+				if(days < 1827)
+				{
+					HeightForAge hfa = new HeightForAge();
+					hfa.setAgeInDays(days);
+					hfa.setHeightInCM(o.getValueNumeric().intValue());
+					heightForAge.add(hfa);
+				}
+			}
+		}
+		
+		return heightForAge;
+	}
+	
+	public List<HeightForAge> getStatureForAge()
+	{
+		List<HeightForAge> heightForAge = new ArrayList<HeightForAge>();
+		Date birthDate = patient.getBirthdate();
+		
+		Collection<Obs> heightObs = getHeightObsList();
+		if(heightObs != null)
+		{
+			for(Obs o: heightObs)
+			{
+				int months = calculateMonthsDifference(o.getObsDatetime(), birthDate);
+				if(months > 23 && months < 241)
+				{
+					HeightForAge hfa = new HeightForAge();
+					hfa.setAgeInMonths(months);
+					hfa.setHeightInCM(o.getValueNumeric().intValue());
+					heightForAge.add(hfa);
+				}
+			}
+		}
+		
+		return heightForAge;
+	}
+	
+	public List<BMIForAge> getBmiForAge()
+	{
+		List<BMIForAge> bmiForAge = new ArrayList<BMIForAge>();
+		Date birthDate = patient.getBirthdate();
+		
+		for(VisitGroup vg: getVisitsPedi())
+		{
+			if(vg.getDate() != null)
+			{
+				int months = calculateMonthsDifference(vg.getDate(), birthDate);
+				if(months > 60 && months < 229)
+				{
+					Obs height = vg.getHeight();
+					Obs weight = vg.getWeight();
+					
+					if(height != null && height.getValueNumeric() != null && weight != null && weight.getValueNumeric() != null)
+					{
+						Double bmi = weight.getValueNumeric() / (height.getValueNumeric()/100 * height.getValueNumeric()/100);
+						BMIForAge bmiVal = new BMIForAge();
+						
+						bmiVal.setAgeInMonths(months);
+						bmiVal.setBmi(bmi);
+						bmiForAge.add(bmiVal);
+					}
+				}
+			}
+		}
+		
+		return bmiForAge;
+	}
+	
+	public List<WeightForHeight> getWeightForLength()
+	{
+		List<WeightForHeight> weightForLength = new ArrayList<WeightForHeight>();
+		Date birthDate = patient.getBirthdate();
+		
+		for(VisitGroup vg: getVisitsPedi())
+		{
+			if(vg.getDate() != null)
+			{
+				int months = calculateMonthsDifference(vg.getDate(), birthDate);
+				if(months < 25)
+				{
+					Obs height = vg.getHeight();
+					Obs weight = vg.getWeight();
+					
+					if(height != null && height.getValueNumeric() != null && weight != null && weight.getValueNumeric() != null)
+					{
+						WeightForHeight wfl = new WeightForHeight();
+						wfl.setHeight(height.getValueNumeric());
+						wfl.setWeight(weight.getValueNumeric());
+						weightForLength.add(wfl);
+					}
+				}
+			}
+		}
+		
+		return weightForLength;
+	}
+	
+	public List<WeightForHeight> getWeightForHeight()
+	{
+		List<WeightForHeight> weightForHeight = new ArrayList<WeightForHeight>();
+		Date birthDate = patient.getBirthdate();
+		
+		for(VisitGroup vg: getVisitsPedi())
+		{
+			if(vg.getDate() != null)
+			{
+				int months = calculateMonthsDifference(vg.getDate(), birthDate);
+				if(months > 24 && months < 60)
+				{
+					Obs height = vg.getHeight();
+					Obs weight = vg.getWeight();
+					
+					if(height != null && height.getValueNumeric() != null && weight != null && weight.getValueNumeric() != null)
+					{
+						WeightForHeight wfh = new WeightForHeight();
+						wfh.setHeight(height.getValueNumeric());
+						wfh.setWeight(weight.getValueNumeric());
+						weightForHeight.add(wfh);
+					}
+				}
+			}
+		}
+		
+		return weightForHeight;
+	}
+	
+	private int calculateMonthsDifference(Date observation, Date startingDate)
+	{
+		int diff = 0;
+	
+		Calendar obsDate = Calendar.getInstance();	
+		obsDate.setTime(observation);
+	
+		Calendar startDate = Calendar.getInstance();
+		startDate.setTime(startingDate);
+	
+		//find out if there is any difference in years first
+		diff = obsDate.get(Calendar.YEAR) - startDate.get(Calendar.YEAR);
+		diff = diff * 12;
+	
+		int monthDiff = obsDate.get(Calendar.MONTH) - startDate.get(Calendar.MONTH);
+		diff = diff + monthDiff;
+	
+		return diff;
+	}
+	
+	private int calculateDaysDifference(Date observation, Date startingDate)
+	{
+		long milis1 = observation.getTime();
+		long milis2 = startingDate.getTime();
+		
+		long diff = milis1 - milis2;
+		
+		long diffDays = diff / (24 * 60 * 60 * 1000);
+	
+		return (int)diffDays;
+	}
 
-	public List<LabGroup> getLabsTable() {
+	public List<LabGroup> getLabsTableAdult() {
 		Integer[] labConceptIds = {	ConceptDictionary.LABORATORY_EXAMINATIONS_CONSTRUCT, ConceptDictionary.OTHER_LAB_TEST_CONSTRUCT, ConceptDictionary.HEMOGLOBIN, ConceptDictionary.HEMATOCRIT, ConceptDictionary.WHITE_BLOOD_CELLS, 
 				ConceptDictionary.GRANULOCYTE, ConceptDictionary.ABSOLUTE_LYMPHOCYTE_COUNT, ConceptDictionary.PLATELETS, ConceptDictionary.SERUM_GLUTAMIC_OXALOACETIC_TRANSAMINASE,
 				ConceptDictionary.SERUM_GLUTAMIC_PYRUVIC_TRANSAMINASE, ConceptDictionary.SERUM_CREATININE, ConceptDictionary.SERUM_GLUCOSE, ConceptDictionary.RAPID_PLASMIN_REAGENT,
@@ -156,9 +474,31 @@ public class AdultHIVFlowsheetObsMapper {
 
     	return labRows;
 	}
+	
+	public List<LabGroup> getLabsTablePedi() {
+		Integer[] labConceptIds = {	ConceptDictionary.LABORATORY_EXAMINATIONS_CONSTRUCT, ConceptDictionary.OTHER_LAB_TEST_CONSTRUCT, ConceptDictionary.HEMOGLOBIN, ConceptDictionary.HEMATOCRIT, ConceptDictionary.WHITE_BLOOD_CELLS, 
+				ConceptDictionary.GRANULOCYTE, ConceptDictionary.ABSOLUTE_LYMPHOCYTE_COUNT, ConceptDictionary.PLATELETS, ConceptDictionary.SERUM_GLUTAMIC_OXALOACETIC_TRANSAMINASE,
+				ConceptDictionary.SERUM_GLUTAMIC_PYRUVIC_TRANSAMINASE, ConceptDictionary.SERUM_CREATININE, ConceptDictionary.SERUM_GLUCOSE, ConceptDictionary.RAPID_PLASMIN_REAGENT,
+				ConceptDictionary.CD4_COUNT, ConceptDictionary.HIV_VIRAL_LOAD, ConceptDictionary.CD4_PERCENTAGE};
+
+		Collection<LabMapping> collection = getObsView(labConceptIds, LabMapping.class);
+
+    	List<List<LabMapping>> labsSorted = sortAndGroupObsByDate(collection);
+
+    	int existingAllergyCount = collection.size();
+        for(int index = existingAllergyCount; index < Math.max(MIN_LAB_ROWS, existingAllergyCount + MIN_LABS_EXTRA_ROWS); index++)
+        	labsSorted.add(new ArrayList<LabMapping>());
+    	
+    	List<LabGroup> labRows = new ArrayList<LabGroup>(labsSorted.size());
+    	for(List<LabMapping> row : labsSorted) {
+    		labRows.add(new LabGroup(new ArrayList<Lab>(row)));
+    	}
+
+    	return labRows;
+	}
 
     public Collection<Allergy> getAllergies() {
-    	Integer[] conceptIds = { ConceptDictionary.ADVERSE_EFFECT_CONSTRUCT, ConceptDictionary.ADVERSE_EFFECT };
+    	Integer[] conceptIds = { ConceptDictionary.ADVERSE_EFFECT_CONSTRUCT, ConceptDictionary.ADVERSE_EFFECT_NONCODED, ConceptDictionary.ADVERSE_EFFECT };
 		
 		Collection<AllergyMapping> allergiesList = getObsView(conceptIds, AllergyMapping.class);
 		
@@ -191,7 +531,10 @@ public class AdultHIVFlowsheetObsMapper {
     	Integer[] conceptIds = { ConceptDictionary.Current_opportunistic_infection_construct, 
     			//ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION, -- commented this out because its a boolean concept, and 'false', or 'true' isn't really clinically useful. 
     			ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED, 
-    			ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED_NON_CODED };
+    			ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED_NON_CODED,
+    			ConceptDictionary.CURRENT_OI, 
+    			ConceptDictionary.OPPORTUNISTIC_INFECTION_NON_CODED,
+    			ConceptDictionary.OPPORTUNISTIC_INFECTION_SET};
 
 		Collection<OIMapping> oisLists = getObsView(conceptIds, OIMapping.class);
 
@@ -217,12 +560,25 @@ public class AdultHIVFlowsheetObsMapper {
     	// Filter out duplicates - note this is already sorted and we only want to keep the first.
     	List<ProblemMapping> uniqueProblemList = new ArrayList<ProblemMapping>();
     	TreeSet<Integer> conceptMap = new TreeSet<Integer>();
+    	TreeSet<String> nonCodedMap = new TreeSet<String>();
     	for(ProblemMapping row : list) {
-    		int conceptId = row.getDiagnosis().getConcept().getConceptId();
-    		if(!conceptMap.contains(conceptId)) {
-    			uniqueProblemList.add(row);
-    			
-    			conceptMap.add(conceptId);
+    		if(row.getDiagnosis().getValueCoded() != null)
+    		{
+	    		int conceptId = row.getDiagnosis().getValueCoded().getConceptId();
+	    		if(!conceptMap.contains(conceptId)) {
+	    			uniqueProblemList.add(row);
+	    			
+	    			conceptMap.add(conceptId);
+	    		}
+    		}
+    		else if(row.getDiagnosis().getValueText() != null)
+    		{
+    			String value = row.getDiagnosis().getValueText().toLowerCase();
+	    		if(!nonCodedMap.contains(value)) {
+	    			uniqueProblemList.add(row);
+	    			
+	    			nonCodedMap.add(value);
+	    		}
     		}
     	}
     	
@@ -235,8 +591,29 @@ public class AdultHIVFlowsheetObsMapper {
     	return new ArrayList<Problem>(list);
     }
 
-    public Collection<VisitGroup> getVisits() {
-    	Integer[] conceptIds = { ConceptDictionary.PATIENT_VISIT_CONSTRUCT, ConceptDictionary.WEIGHT_KG, ConceptDictionary.FUNCTIONAL_ABILITY_OF_THE_PATIENT, ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED, ConceptDictionary.SEXUALLY_TRANSMITTED_INFECTION_SYMPTOMS_COMMENT, ConceptDictionary.RESULT_OF_TUBERCULOSIS_SCREENING_QUALITATIVE, ConceptDictionary.METHOD_OF_FAMILY_PLANNING, ConceptDictionary.PREGNANCY_STATUS, ConceptDictionary.NUMBER_OF_DOSES_OF_ANTIRETROVIRALS_MISSED_IN_THE_PAST_MONTH, ConceptDictionary.FREE_TEXT_REASON_FOR_POOR_ADHERENCE_TO_ANTIRETROVIRAL_THERAPY };
+    public Collection<VisitGroup> getVisitsAdult() {
+    	Integer[] conceptIds = { ConceptDictionary.Current_opportunistic_infection_construct, ConceptDictionary.NEXT_VISIT, ConceptDictionary.PATIENT_VISIT_CONSTRUCT, ConceptDictionary.WEIGHT_KG, ConceptDictionary.FUNCTIONAL_ABILITY_OF_THE_PATIENT, ConceptDictionary.OPPORTUNISTIC_INFECTION_SET, ConceptDictionary.STI_INFECTION, ConceptDictionary.STI_INFECTION_NON_CODED, ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED_NON_CODED, ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED, ConceptDictionary.SEXUALLY_TRANSMITTED_INFECTION_SYMPTOMS_COMMENT, ConceptDictionary.RESULT_OF_TUBERCULOSIS_SCREENING_QUALITATIVE, ConceptDictionary.METHOD_OF_FAMILY_PLANNING, ConceptDictionary.PREGNANCY_STATUS, ConceptDictionary.NUMBER_OF_DOSES_OF_ANTIRETROVIRALS_MISSED_IN_THE_PAST_MONTH, ConceptDictionary.FREE_TEXT_REASON_FOR_POOR_ADHERENCE_TO_ANTIRETROVIRAL_THERAPY };
+
+		Collection<VisitMapping> set = getObsView(conceptIds, VisitMapping.class);
+
+    	List<List<VisitMapping>> sortedObsList = sortAndGroupObsByDate(set);
+
+    	// Add at least one blank row and make sure there are 32 listed
+    	sortedObsList.add(new ArrayList<VisitMapping>());
+    	
+    	for (int m = 0; m<30; m++)
+    		sortedObsList.add(new ArrayList<VisitMapping>());
+
+    	List<VisitGroup> visits = new ArrayList<VisitGroup>(sortedObsList.size());
+    	for(List<VisitMapping> row : sortedObsList) {
+    		visits.add(new VisitGroup(new ArrayList<Visit>(row)));
+    	}
+
+    	return visits;    	
+    }
+    
+    public Collection<VisitGroup> getVisitsPedi() {
+    	Integer[] conceptIds = { ConceptDictionary.Current_opportunistic_infection_construct, ConceptDictionary.NEXT_VISIT, ConceptDictionary.PATIENT_VISIT_CONSTRUCT, ConceptDictionary.WEIGHT_KG, ConceptDictionary.HEIGHT_WEIGHT_PERCENTILE, ConceptDictionary.STI_INFECTION, ConceptDictionary.OPPORTUNISTIC_INFECTION_SET, ConceptDictionary.STI_INFECTION_NON_CODED, ConceptDictionary.FUNCTIONAL_ABILITY_OF_THE_PATIENT, ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED_NON_CODED, ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED, ConceptDictionary.SEXUALLY_TRANSMITTED_INFECTION_SYMPTOMS_COMMENT, ConceptDictionary.RESULT_OF_TUBERCULOSIS_SCREENING_QUALITATIVE, ConceptDictionary.HEIGHT_CM, ConceptDictionary.Z_SCORE_HEIGHT, ConceptDictionary.Z_SCORE_WEIGHT, ConceptDictionary.NUMBER_OF_DOSES_OF_ANTIRETROVIRALS_MISSED_IN_THE_PAST_MONTH, ConceptDictionary.FREE_TEXT_REASON_FOR_POOR_ADHERENCE_TO_ANTIRETROVIRAL_THERAPY };
 
 		Collection<VisitMapping> set = getObsView(conceptIds, VisitMapping.class);
 
@@ -270,6 +647,21 @@ public class AdultHIVFlowsheetObsMapper {
     	
     	return new ArrayList<Image>(list);
     }
+	
+	public Collection<ImagePedi> getImagesPedi() {
+    	// Because Obs can be contained in sets make sure to order this ordered so sets are
+		// loaded first.  The individual obs will be filtered out.
+		Integer[] conceptIds = { ConceptDictionary.MEDICAL_IMAGE_CONSTRUCT, ConceptDictionary.CHEST_XRAY_CONSTRUCT, ConceptDictionary.ABDOMINAL_ULTRASOUND, ConceptDictionary.TESTS_ORDERED, ConceptDictionary.XRAY_CHEST };
+
+		Collection<ImagePediMapping> list = getObsView(conceptIds, ImagePediMapping.class);
+
+		list.add(new ImagePediMapping(new Obs()));
+		list.add(new ImagePediMapping(new Obs()));
+		list.add(new ImagePediMapping(new Obs()));
+		list.add(new ImagePediMapping(new Obs()));
+    	
+    	return new ArrayList<ImagePedi>(list);
+    }
 
 	/**
 	 * Wraps the underlying representation of obs values with higher level "view".  NOTE: this sorts 
@@ -286,14 +678,15 @@ public class AdultHIVFlowsheetObsMapper {
 		
 		//process sets first so that set members don't generate new rows if conceptId list contains both sets and regular concepts
 		for(Integer labConceptId : conceptIds) {
-			if (Context.getConceptService().getConcept(labConceptId).isSet()){
+			Concept c = Context.getConceptService().getConcept(labConceptId);
+			if (c != null && c.isSet()){
 				List<Obs> oList = getObsList(labConceptId);
 				labObs.addAll(oList);
 			}
 		}
 		for(Integer labConceptId : conceptIds) {
-			
-			if (!Context.getConceptService().getConcept(labConceptId).isSet()){
+			Concept c = Context.getConceptService().getConcept(labConceptId);
+			if (c != null && !c.isSet()){
 				List<Obs> oList = getObsList(labConceptId);
 				labObs.addAll(oList);
 			}
@@ -333,7 +726,7 @@ public class AdultHIVFlowsheetObsMapper {
 			List<Obs> obsList = Context.getObsService().getObservations(Collections.singletonList((Person) this.patient), null, Collections.singletonList(concept), null, null, null, null, null, null, null, null, false);
 			
 			if(obsList == null)
-				return null;
+				return new ArrayList<Obs>();
 			
 			//filterOutResearchEncounters(obsList);
 			
@@ -410,7 +803,7 @@ public class AdultHIVFlowsheetObsMapper {
     	Map<String, List<T>> dateToObsMap = new HashMap<String, List<T>>();    	
     	for(T obs : labObs) {
     		if(!obs.isVoided()) {
-	    		String key = formatDate("yyyy-MM-dd", obs.getDate());
+	    		String key = formatDate("yyyy-MM-dd", obs.getObsDate());
 	    		List<T> obsMapOnDate = dateToObsMap.get(key);
 	    		if(obsMapOnDate == null) {
 	    			obsMapOnDate = new ArrayList<T>(); 
@@ -431,6 +824,11 @@ public class AdultHIVFlowsheetObsMapper {
     		drugOrdersSorted.add(dateToObsMap.get(key));
     	}
 		return drugOrdersSorted;
+	}
+	
+	public int getAge()
+	{
+		return patient.getAge();
 	}
 
 /*	private List<List<LabObs>> sortAndGroupObsByDate(Collection<LabObs> labObs) {

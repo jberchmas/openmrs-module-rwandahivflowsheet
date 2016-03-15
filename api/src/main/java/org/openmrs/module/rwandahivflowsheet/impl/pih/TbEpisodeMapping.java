@@ -20,8 +20,11 @@ public class TbEpisodeMapping implements Comparable<TbEpisodeMapping>{
 	public TbEpisodeMapping (){}
 	
 	public DrugOrder getContinuationPhaseDrugOrder(){
-		if (tbDrugOrders.size() < 2)
-			return null;
+		if(tbDrugOrders.size() == 1 && tbDrugOrders.get(0).isDiscontinued(null))
+		{
+			return tbDrugOrders.get(0);
+		}
+		
 		Date initialDate = null;
 		for (DrugOrder dor : tbDrugOrders){
 			if (initialDate == null)
@@ -32,6 +35,7 @@ public class TbEpisodeMapping implements Comparable<TbEpisodeMapping>{
 					|| dor.getConcept().getConceptId().equals(ConceptDictionary.TB_DRUG_RHZ))
 				return dor;
 		}
+		
 		return null;
 	}
 	

@@ -17,6 +17,14 @@ div#form-header-section { margin-bottom: 10px; }
 .value-label	{ font-weight: bold; }
 .value-data 	{ color: #2200FF; }
 .value-date 	{ color: #2200FF; }
+.value-calculated 	{ color: #5B1094; }
+
+.value-label-big { 
+					font-weight: bold;
+				 }
+.value-data-big  { 
+					color: #2200FF; 
+				 }
 		
 .checkbox-label {
 	padding-left: 3px;
@@ -30,6 +38,16 @@ div#form-header-section { margin-bottom: 10px; }
 	display: inline-block;
 	vertical-align: middle;
 	font-size: 9px;
+}
+
+.checkbox-box-ticked {
+	outline: 1px solid black;
+	width: 11px;
+	text-align: center;
+	display: inline-block;
+	vertical-align: middle;
+	font-size: 9px;
+	color: #2200FF; 
 }
 
 .form-header {
@@ -124,6 +142,9 @@ td.section-emr	{ text-align: center; display: none;	}
 #col-visits-10 { font-weight: normal; text-align: left; width: 9%; background-color: #FFFFFF; }
 #col-visits-11 { font-weight: normal; text-align: left; width: 9%; background-color: #FFFFFF; }
 #col-visits-12 { font-weight: normal; text-align: left; width: 9%; background-color: #FFFFFF; }
+#col-visits-13 { font-weight: normal; text-align: left; width: 9%; background-color: #FFFFFF; }
+#col-visits-14 { font-weight: normal; text-align: left; width: 9%; background-color: #FFFFFF; }
+#col-visits-15 { font-weight: normal; text-align: left; width: 9%; background-color: #FFFFFF; }
 
 #col-images-emr-1 { font-weight: normal; text-align: center; width: 1%; background-color: #FFFFFF; }
 #col-images-view { font-weight: normal; text-align: center; width: 1%; background-color: #FFFFFF; }
@@ -134,6 +155,16 @@ td.section-emr	{ text-align: center; display: none;	}
 .tickLabel { font-size: 8px; }
 
 .cd4Graph {	width: 900px; height: 600px; }
+.cd4PercentGraph {	width: 900px; height: 600px; }
+.heightForAge {	width: 900px; height: 600px; }
+.lengthForAge {	width: 900px; height: 600px; }
+.weightForAgeBirth {	width: 900px; height: 600px; }
+.weightForAge {	width: 900px; height: 600px; }
+.weightForAgeTotal {	width: 900px; height: 600px; }
+.heightForAgeTotal {	width: 900px; height: 600px; }
+.weightForLength {	width: 900px; height: 600px; }
+.weightForHeight {	width: 900px; height: 600px; }
+.bmiForAge {	width: 900px; height: 600px; }
 
 .bmiGraph {	width: 720px; height: 540px; }
 
@@ -142,6 +173,8 @@ td.section-emr	{ text-align: center; display: none;	}
 .note {	color: red; }
 
 .empty-row { display: none; }
+
+.graphs h1 { font-size: 20px; }
 
 /* Vertical Tabs */
 .ui-tabs-vertical { min-width:85.8em; border: solid thin green; padding: 0.3em; background: #5C9CCC; }

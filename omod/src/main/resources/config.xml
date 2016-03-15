@@ -4,12 +4,12 @@
 <module configVersion="1.3">
 	
 	<id>rwandahivflowsheet</id>
-	<name>PIH Rwanda Adult HIV Flowsheet</name>
-	<version>0.4</version>
+	<name>PIH Rwanda HIV Flowsheet</name>
+	<version>0.5.5</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Partners in Health</author>
 	<description>
-		PIH Rwanda Adult HIV Flowsheet
+		PIH Rwanda HIV Flowsheet
 	</description>
 	<activator>@MODULE_PACKAGE@.RwandaHIVFlowsheetModuleActivator</activator>
 	
@@ -17,7 +17,7 @@
 
 	<require_modules>
 	   		<require_module>org.openmrs.module.htmlformentry</require_module>
-	   		<require_module>org.openmrs.module.ui.springmvc</require_module>
+	   		<require_module>org.openmrs.module.heightweighttracker</require_module>
 	</require_modules>
 	
 	 <extension>
@@ -25,6 +25,139 @@
 		<class>@MODULE_PACKAGE@.extension.html.RwandaAdultHIVFlowsheetFormItem</class>
 	</extension>
 	
+	 <extension>
+		<point>org.openmrs.patientDashboard.patientSummary</point>
+		<class>@MODULE_PACKAGE@.extension.html.RwandaPediHIVFlowsheetFormItem</class>
+	</extension>
+	
+	
+	<!-- GENERAL -->
+	<globalProperty>
+		<property>rwandahivflowsheet.ShowOtherIdentifierTypes</property>
+		<defaultValue>c147b1de-2700-102b-80cb-0017a47871b2,4e458867-9a68-4e55-9fe0-fb49fac4e6b0</defaultValue>
+		<description>
+			list all local patient identifier types by id, uuid or name that you'd like to see in the patient header in the flowsheet.  Comma-delimited.
+		</description>
+	</globalProperty>
+	
+	
+	<!-- ADULT -->
+	<globalProperty>
+		<property>rwandaadulthivflowsheet.adultShowPatientChartLinksIfInProgram</property>
+		<defaultValue>cf7c0e30-2700-102b-80cb-0017a47871b2,cf7c13da-2700-102b-80cb-0017a47871b2,2f7506b4-21e6-445d-ba73-2c782a6ecbee</defaultValue>
+		<description>
+			a comma-delimited list of program uuids, ids, or names.  If in the programs listed, the patient will have the adult flowsheet in the patient dashboard.
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>rwandaadulthivflowsheet.Form_NewAllergy</property>
+		<defaultValue>847d3c57-f095-46ef-992f-455a5969b6d1</defaultValue>
+		<description>
+			Adult form ID for htmlform for new allergies
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>rwandaadulthivflowsheet.Form_NewHospitalisations</property>
+		<defaultValue>1b2a395d-772d-45db-971d-7c1e8f55ab9e</defaultValue>
+		<description>
+			Adult form ID for hospitalizations
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>rwandaadulthivflowsheet.Form_NewOI</property>
+		<defaultValue>5bbaa9fc-7da1-41fd-ab2e-d9b975b90de4</defaultValue>
+		<description>
+			Adult form ID for new OIs (Opportunistic Infections)
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>rwandaadulthivflowsheet.Form_NewProblem</property>
+		<defaultValue>b0508003-649d-4fe0-a58e-27916f26e435</defaultValue>
+		<description>
+			Adult form ID for new Problems
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>rwandaadulthivflowsheet.Form_NewVisit</property>
+		<defaultValue>ab35557d-b558-4c19-90d4-dbde7260c5b8</defaultValue>
+		<description>
+			adult form ID for new visits
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>rwandaadulthivflowsheet.Form_NewLab</property>
+		<defaultValue>20316666-2ce5-462c-b4eb-1e728e2d8663</defaultValue>
+		<description>
+			adult form ID for new labs
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>rwandaadulthivflowsheet.Form_NewImage</property>
+		<defaultValue>cc9131cc-836b-4393-9786-2e0fccafdf0a</defaultValue>
+		<description>
+			adult form ID for new images
+		</description>
+	</globalProperty>
+	
+	<!-- PEDI FORMS -->
+	<globalProperty>
+		<property>rwandaadulthivflowsheet.pediShowPatientChartLinksIfInProgram</property>
+		<defaultValue>cf7c16e6-2700-102b-80cb-0017a47871b2</defaultValue>
+		<description>
+			a comma-delimited list of program uuids, ids, or names.  If in programs listed, the patient will have the pedi flowsheet link in the patient dashboard.
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>rwandapedihivflowsheet.Form_NewAllergy</property>
+		<defaultValue>8b595f0e-e035-4011-b06a-04515dfc2bd9</defaultValue>
+		<description>
+			pedi form ID for htmlform for new allergies
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>rwandapedihivflowsheet.Form_NewHospitalisations</property>
+		<defaultValue>e2a3635f-c6df-448c-bb8f-5391858d70a4</defaultValue>
+		<description>
+			pedi form ID for hospitalizations
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>rwandapedihivflowsheet.Form_NewOI</property>
+		<defaultValue>95bfa122-5dd9-4c55-8354-431ed78d35a2</defaultValue>
+		<description>
+			pedi form ID for new OIs
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>rwandapedihivflowsheet.Form_NewProblem</property>
+		<defaultValue>ce98550f-8059-4889-856f-53636e202b23</defaultValue>
+		<description>
+			pedi form ID for new Problems
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>rwandapedihivflowsheet.Form_NewVisit</property>
+		<defaultValue>513d44c2-e08a-4c07-93de-b7b7753c7be1</defaultValue>
+		<description>
+			pedi form ID for new visits
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>rwandapedihivflowsheet.Form_NewLab</property>
+		<defaultValue>fc993fc5-3b4a-4807-aa9f-452ad12eca1d</defaultValue>
+		<description>
+			pedi form ID for new labs
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>rwandapedihivflowsheet.Form_NewImage</property>
+		<defaultValue>655decb3-c4fc-4550-8cfa-6c71fe7aea0e</defaultValue>
+		<description>pedi form for new images
+		</description>
+	</globalProperty> 	
+	
+	
+	<!-- CONSTANTS -->
 	<globalProperty>
 		<property>rwandahivflowsheet.constants</property>
 		<defaultValue>
@@ -159,6 +292,9 @@ OTHER_LAB_TEST_NAME = 3ce1c90e-26fe-102b-80cb-0017a47871b2
 OTHER_LAB_TEST_RESULT = 3ce1ca8a-26fe-102b-80cb-0017a47871b2
 OTHER_NON_CODED = 3cee7fb4-26fe-102b-80cb-0017a47871b2
 OUTPATIENT_DIAGNOSIS = f0230f4a-1b20-4a47-bce9-c5a9c01367ec
+OPPORTUNISTIC_INFECTION = cfd246e2-db79-4ab9-bc7a-a45813734a3b
+OPPORTUNISTIC_INFECTION_SET = 71e2fc5d-6ef1-411b-8a0c-b6604fd17a89 
+OPPORTUNISTIC_INFECTION_START_DATE = fc718b0c-34bd-4b22-a678-f1fd323b3a9a
 PATIENT_DEFAULTED = 3cdd5176-26fe-102b-80cb-0017a47871b2
 PATIENT_DIED = 3cdd446a-26fe-102b-80cb-0017a47871b2
 PATIENT_HAD_SIDE_EFFECTS = 3cde61e2-26fe-102b-80cb-0017a47871b2
@@ -172,6 +308,7 @@ POSITIVE = 3cd3a7a2-26fe-102b-80cb-0017a47871b2
 PREGNANCY_STATUS = 3ceb4880-26fe-102b-80cb-0017a47871b2
 PREVIOUS_DIAGNOSIS = 3cd6773e-26fe-102b-80cb-0017a47871b2
 PREVIOUS_DIAGNOSIS_CONSTRUCT = 3cd675b8-26fe-102b-80cb-0017a47871b2
+PREVIOUS_DIAGNOSIS_DATE = 3cd6817a-26fe-102b-80cb-0017a47871b2
 PROPHYLAXIS_REASON_FOR_STOPPING_TOXICITY = 3cdc1068-26fe-102b-80cb-0017a47871b2
 PROPHYLAXIS_REASON_FOR_STOPPING_ABANDONED = 3cdd5176-26fe-102b-80cb-0017a47871b2
 PROPHYLAXIS_REASON_FOR_STOPPING_OUT_OF_STOCK = 3cde143a-26fe-102b-80cb-0017a47871b2
@@ -226,62 +363,34 @@ WHO_STAGE = 3cdb3b02-26fe-102b-80cb-0017a47871b2
 XRAY_CHEST = 3ccc6186-26fe-102b-80cb-0017a47871b2
 YES = 3cd6f600-26fe-102b-80cb-0017a47871b2
 PatientIdentiferId_Tracnet = c147b01c-2700-102b-80cb-0017a47871b2
+PatientIdentiferId_IMB = c147b1de-2700-102b-80cb-0017a47871b2
 ProgramId_AdultHIVProgram = cf7c0e30-2700-102b-80cb-0017a47871b2
+ProgramId_PediHIVProgram = cf7c16e6-2700-102b-80cb-0017a47871b2
+HIV_DIAGNOSIS_DATE = 3ce496ca-26fe-102b-80cb-0017a47871b2
+DRUG_ISONIAZID = 3cd27a8a-26fe-102b-80cb-0017a47871b2
+Z_SCORE_WEIGHT = c9d8c9db-518c-4a00-985d-d2fc8ac1f739
+Z_SCORE_HEIGHT = 6d4b1720-f45c-4069-98d9-e7e865105a7a
+HEIGHT_WEIGHT_PERCENTILE = 2438e295-d9da-4d5c-bacc-13c313e34755
+PATIENT_INFORMED = 67895ecf-c4e4-4756-b4cf-a4c495992892
+PATIENT_NOT_INFORMED = a427e3c3-e638-4f0d-af7b-c9337364b428
+CD4_PERCENTAGE = 3cd3d1be-26fe-102b-80cb-0017a47871b2
+ABDOMINAL_ULTRASOUND = 3cd49748-26fe-102b-80cb-0017a47871b2
+TREATMENT_COMPLETE = 3cdcecea-26fe-102b-80cb-0017a47871b2
+INFORMED_STATUS = 1b81c04b-ecf5-4ae8-bdbe-71959b677302
+ADULT_FLOWSHEET_ENCOUNTER_ID = c1c39e98-2f2d-432b-8cc9-b2f273209c29
+PEDI_FLOWSHEET_ENCOUNTER_ID = 5e8fecc0-0cae-43a2-896d-9f8477e16392
+NEXT_VISIT = 3ce94df0-26fe-102b-80cb-0017a47871b2
+OPPORTUNISTIC_INFECTIONS = c43c0462-be15-435b-9a1a-2a3fa450247d
+OPPORTUNISTIC_INFECTIONS_NON_CODED = 35c85d2b-fbe6-4287-be3a-91e098529104
+STI_INFECTIONS = 812acd3b-08f8-4f56-8162-98e0f6b26630
+STI_INFECTIONS_NON_CODED = a8b35975-7680-4ef1-8298-de222d361eb8
+STI_SET = fc871ec0-7865-4f01-ab2f-3790f518160b 
 </defaultValue>
 		<description>
 			paste in a properties text file containing key, and local ID for objects.  For more explanation,
 			see the ConceptDictionary class of this module.
 		</description>
 	</globalProperty>
-	
-	<globalProperty>
-		<property>rwandahivflowsheet.Form_NewAllergy</property>
-		<defaultValue></defaultValue>
-		<description>
-			form ID for htmlform for new allergies
-		</description>
-	</globalProperty>
-	<globalProperty>
-		<property>rwandahivflowsheet.Form_NewHospitalisations</property>
-		<defaultValue></defaultValue>
-		<description>
-			form ID for hospitalizations
-		</description>
-	</globalProperty>
-	<globalProperty>
-		<property>rwandahivflowsheet.Form_NewOI</property>
-		<defaultValue></defaultValue>
-		<description>
-			form ID for new IOs
-		</description>
-	</globalProperty>
-	<globalProperty>
-		<property>rwandahivflowsheet.Form_NewProblem</property>
-		<defaultValue></defaultValue>
-		<description>
-			form ID for new Problems
-		</description>
-	</globalProperty>
-	<globalProperty>
-		<property>rwandahivflowsheet.Form_NewVisit</property>
-		<defaultValue></defaultValue>
-		<description>
-			form ID for new visits
-		</description>
-	</globalProperty>
-	<globalProperty>
-		<property>rwandahivflowsheet.Form_NewLab</property>
-		<defaultValue></defaultValue>
-		<description>
-			form ID for new labs
-		</description>
-	</globalProperty>
-	<!--<globalProperty>
-		<property>rwandahivflowsheet.Form_NewImage</property>
-		<defaultValue></defaultValue>
-		<description>
-		</description>
-	</globalProperty> -->
 	
 	<!--  Message Properties -->
 	<messages>

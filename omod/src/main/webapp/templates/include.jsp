@@ -7,6 +7,3 @@
 <%@ taglib prefix="spring" uri="/WEB-INF/taglibs/spring.tld" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib prefix="fn" uri="/WEB-INF/taglibs/fn.tld" %>
-
-<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/module/ui/springmvc" %>
-<%@ taglib prefix="ui-taglib" uri="/WEB-INF/view/module/ui/springmvc/resources/ui.tld" %>

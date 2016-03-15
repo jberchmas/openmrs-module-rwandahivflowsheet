@@ -66,9 +66,20 @@ public abstract class ObsMapping implements BaseObs {
 	@Override
 	public Encounter getEncounter() {
 		if(obs == null)
+		{
 			return null;
+		}
 		
-		return obs.getEncounter();
+		//this is right if we want to be able to append to existing RV encounters, like in HtmlFormFlowsheet
+		if(obs.getEncounter() != null)
+		{
+			if(obs.getEncounter().getEncounterType().getEncounterTypeId() == ConceptDictionary.ADULT_FLOWSHEET_ENCOUNTER_ID || obs.getEncounter().getEncounterType().getEncounterTypeId() == ConceptDictionary.PEDI_FLOWSHEET_ENCOUNTER_ID)
+			{
+				return obs.getEncounter();
+			}
+		}
+		
+		return null;
 	}
 
 	//  MLH TODO FIXME create a basic equals method

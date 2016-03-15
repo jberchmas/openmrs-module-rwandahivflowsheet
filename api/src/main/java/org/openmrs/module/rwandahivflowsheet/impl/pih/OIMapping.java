@@ -1,12 +1,20 @@
 package org.openmrs.module.rwandahivflowsheet.impl.pih;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptSet;
+import org.openmrs.Encounter;
 import org.openmrs.Obs;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.rwandahivflowsheet.mapper.OI;
 
 public class OIMapping extends ObsMapping implements Comparable<OIMapping>, OI {
+	
+	private Date obsDate = null;
 	
 	public OIMapping(Obs obs) {
 		super(obs);
@@ -16,10 +24,17 @@ public class OIMapping extends ObsMapping implements Comparable<OIMapping>, OI {
 	public Date getOpportunisticInfectionDate(){
 		if(!isEmr())
 			return null;
-		if (getObs().getEncounter() != null)
-			return getObs().getEncounter().getEncounterDatetime();
 		return getObs().getObsDatetime();
 		
+	}
+	
+	public Date getObsDate() {
+		
+		if(obsDate != null)
+		{
+			return obsDate;
+		}
+		return super.getObsDate();
 	}
 	
 	/* (non-Javadoc)
@@ -39,13 +54,15 @@ public class OIMapping extends ObsMapping implements Comparable<OIMapping>, OI {
 			return diagnosis;
 //		if(getObs().getConcept().getId() == ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION)
 //			return null;
-		if(getObs().getConcept().getConceptId().equals(ConceptDictionary.Current_opportunistic_infection_construct)) {
+		if(getObs().getConcept().getConceptId().equals(ConceptDictionary.Current_opportunistic_infection_construct) || getObs().getConcept().getConceptId().equals(ConceptDictionary.OPPORTUNISTIC_INFECTION_SET)) {
 			for(Obs group : getObs().getGroupMembers()) {
 				if (!group.isVoided()){
-					if(group.getConcept().getConceptId().equals(ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED))
+					if(group.getConcept().getConceptId().equals(ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED) || group.getConcept().getConceptId().equals(ConceptDictionary.CURRENT_OI))
 						diagnosis = group;
-					if(group.getConcept().getConceptId().equals(ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED_NON_CODED))
+					if(group.getConcept().getConceptId().equals(ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED_NON_CODED) || group.getConcept().getConceptId().equals(ConceptDictionary.OPPORTUNISTIC_INFECTION_NON_CODED))
 						return group;
+					if(group.getConcept().getConceptId().equals(ConceptDictionary.OPPORTUNISTIC_INFECTION_START_DATE))
+						obsDate = group.getValueDatetime();
 				}
 			}			
 		}
@@ -54,16 +71,42 @@ public class OIMapping extends ObsMapping implements Comparable<OIMapping>, OI {
 	}
 	
 	public boolean getDoNotShow(){
-		if (getDiagnosis() != null && getDiagnosis().getValueCoded() != null && ((getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.NONE) 
-				|| getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.OTHER_NON_CODED)
-				|| getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_CARDIOVASCULAR_DISEASE)
-			    ||   getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_CEREBRAL_LYMPHOMA)			
-			    ||   getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_DEPRESSION)
-			    ||   getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_KAPOSIS_SARCOMA)
-			    ||   getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_NEUROLOGICAL_DEFICIT)
-				)))
-			return true;
-		return false;
+		if(getDiagnosis() != null && getDiagnosis().getValueCoded() != null)
+		{
+			if(getOIs().contains(getDiagnosis().getValueCoded().getConceptId()) || getDiagnosis().getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED_NON_CODED))
+			{
+				return false;
+			}
+		}
+		if(getDiagnosis() != null && (getDiagnosis().getConcept().getConceptId().equals(ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED_NON_CODED) || getDiagnosis().getConcept().getConceptId().equals(ConceptDictionary.OPPORTUNISTIC_INFECTION_NON_CODED)) && getDiagnosis().getValueText() != null && getDiagnosis().getValueText().trim().length() > 0)
+		{
+			return false;
+		}
+		if(getDiagnosis() == null)
+		{
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Returns a set of OI concepts which are used in the OI concept which is defined as
+	 * OPPORTUNISTIC_INFECTION. The OPPORTUNISTIC_INFECTION concept is checked for sets and answers
+	 * 
+	 * @return set of concept Ids
+	 */
+	public static Set<Integer> getOIs() {
+		Set<Integer> ret = new HashSet<Integer>();
+		Concept c = Context.getConceptService().getConcept(ConceptDictionary.OPPORTUNISTIC_INFECTION);
+		if (c != null) {
+			for (ConceptSet cs : c.getConceptSets()) {
+				ret.add(cs.getConcept().getConceptId());
+			}
+			for (ConceptAnswer ca : c.getAnswers()) {
+				ret.add(ca.getAnswerConcept().getConceptId());
+			}
+		}
+		return ret;
 	}
 	
 	/* (non-Javadoc)
@@ -96,7 +139,7 @@ public class OIMapping extends ObsMapping implements Comparable<OIMapping>, OI {
 			return null;
 		
 		for(Obs group : getObs().getGroupMembers()) {
-			if(!group.isVoided() && group.getConcept().getConceptId().equals(ConceptDictionary.CLINICAL_IMPRESSION_COMMENTS))
+			if(!group.isVoided() && (group.getConcept().getConceptId().equals(ConceptDictionary.CLINICAL_IMPRESSION_COMMENTS) || group.getConcept().getConceptId().equals(ConceptDictionary.OPPORTUNISTIC_INFECTION_COMMENTS)))
 				return group.getValueAsString(null);
 		}
 		return "";
@@ -183,6 +226,16 @@ public class OIMapping extends ObsMapping implements Comparable<OIMapping>, OI {
 			return 1;
 		return getObsDate().compareTo(obj.getObsDate());
 	}
+	
+//	@Override
+//	public Encounter getEncounter() {
+//		if (this.getObs() != null  && this.getObs().getEncounter() != null  && this.getObs().getEncounter().getForm() != null){
+//					if (this.getObs().getEncounter().getForm().getFormId().equals(Integer.valueOf(ConceptDictionary.ADULT_OI_FORM))
+//							|| this.getObs().getEncounter().getForm().getFormId().equals(Integer.valueOf(ConceptDictionary.PEDI_OI_FORM)))
+//						return this.getObs().getEncounter();
+//		}
+//		return null;
+//	}
 
 
 }

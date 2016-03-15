@@ -1,5 +1,6 @@
 package org.openmrs.module.rwandahivflowsheet.mapper;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -10,11 +11,15 @@ import org.openmrs.ConceptSet;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.heightweighttracker.mapper.WHOCalculations;
 import org.openmrs.module.rwandahivflowsheet.impl.pih.ConceptDictionary;
+import org.openmrs.module.rwandahivflowsheet.impl.pih.OIMapping;
 
 public class VisitGroup {
 	
 	private List<Visit> visits;
+	
+	private WHOCalculations whoCalculations = new WHOCalculations();
 	
 	public VisitGroup(List<Visit> row) {
 		this.visits = row;
@@ -40,6 +45,42 @@ public class VisitGroup {
 		return null;
 	}
 	
+	public Obs getHeight() {
+		for(Visit visit : visits) {
+			Obs obs = visit.getHeight();
+			if(obs != null)
+				return obs;
+		}
+		return null;
+	}
+	
+	public Obs getZScoreWeight() {
+		for(Visit visit : visits) {
+			Obs obs = visit.getZScoreWeight();
+			if(obs != null)
+				return obs;
+		}
+		return null;
+	}
+	
+	public Obs getZScoreHeight() {
+		for(Visit visit : visits) {
+			Obs obs = visit.getZScoreHeight();
+			if(obs != null)
+				return obs;
+		}
+		return null;
+	}
+	
+	public Obs getHeightWeightPercentile() {
+		for(Visit visit : visits) {
+			Obs obs = visit.getHeightWeightPercentile();
+			if(obs != null)
+				return obs;
+		}
+		return null;
+	}
+	
 	public Obs getFunctionalAbilityOfThePatient() {
 		for(Visit visit : visits) {
 			Obs obs = visit.getFunctionalAbilityOfThePatient();
@@ -56,6 +97,36 @@ public class VisitGroup {
 				return obs;
 		}
 		return null;
+	}
+	
+	public List<Obs> getOIList()
+	{
+		List<Obs> obs = new ArrayList<Obs>();
+		for(Visit visit : visits)
+		{
+			Obs ob = visit.getOI();
+			if(ob != null)
+			{
+				obs.add(ob);
+			}
+		}
+		
+		return obs;
+	}
+	
+	public List<Obs> getSTIList()
+	{
+		List<Obs> obs = new ArrayList<Obs>();
+		for(Visit visit : visits)
+		{
+			Obs ob = visit.getSTI();
+			if(ob != null)
+			{
+				obs.add(ob);
+			}
+		}
+		
+		return obs;
 	}
 	
 	public Obs getSTI() {
@@ -114,12 +185,19 @@ public class VisitGroup {
 		if (o != null && o.getValueCoded() != null){
 			if (o.getValueCoded().getConceptId().equals(ConceptDictionary.ABSTINENCE))
 				return "A";
-			if (o.getValueCoded().getConceptId().equals(ConceptDictionary.CONDOMS))
+			else if (o.getValueCoded().getConceptId().equals(ConceptDictionary.CONDOMS))
 				return "C";
-			if (o.getValueCoded().getConceptId().equals(ConceptDictionary.NATURAL_FAMILY_PLANNING))
+			else if (o.getValueCoded().getConceptId().equals(ConceptDictionary.NATURAL_FAMILY_PLANNING))
 				return "PF"; 
-			if (o.getValueCoded().getConceptId().equals(ConceptDictionary.NONE))
+			else if (o.getValueCoded().getConceptId().equals(ConceptDictionary.NONE))
 				return "R"; 
+			else
+			{
+				if(o != null && o.getValueCoded() != null)
+				{
+					return o.getValueCoded().getDisplayString();
+				}
+			}
 		}
 		return "";
 	}
@@ -127,6 +205,16 @@ public class VisitGroup {
 	public Obs getPregnancyStatus() {
 		for(Visit visit : visits) {
 			Obs obs = visit.getPregnancyStatus();
+			if(obs != null)
+				return obs;
+		}
+		return null;
+	}
+	
+	public Obs getNextVisit()
+	{
+		for(Visit visit : visits) {
+			Obs obs = visit.getNextVisit();
 			if(obs != null)
 				return obs;
 		}
@@ -209,60 +297,122 @@ public class VisitGroup {
 		return null;
 	}
 	
-	public Obs getOpportunisticInfectionForDisplay(){
-		Obs o = getOI();
-		if (o != null && o.getConcept().getConceptId().equals(ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED) && o.getValueCoded() != null && ! ((
-				o.getValueCoded().getConceptId().equals(ConceptDictionary.OTHER_NON_CODED)
-				|| o.getValueCoded().getConceptId().equals(ConceptDictionary.NONE)
-				|| o.getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_CARDIOVASCULAR_DISEASE)
-				|| o.getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_CEREBRAL_LYMPHOMA)
-				|| o.getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_DEPRESSION)
-				|| o.getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_KAPOSIS_SARCOMA)
-				|| o.getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_NEUROLOGICAL_DEFICIT)
-		    )))
-			return o;
-		return null;
+	public String getOpportunisticInfectionForDisplay(){
+		StringBuilder display = new StringBuilder("");
+		List<Obs> obs = getOIList();
+		
+		for(Obs o: obs)
+		{
+			if (o != null && o.getValueCoded() != null && OIMapping.getOIs().contains(o.getValueCoded().getConceptId()))
+			{
+				if(display.length() != 0)
+				{
+					display.append(", ");
+				}
+				display.append(o.getValueAsString(Context.getLocale()));
+			}
+			if (o != null && (o.getConcept().getConceptId().equals(ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED_NON_CODED)  || o.getConcept().getConceptId().equals(ConceptDictionary.OPPORTUNISTIC_INFECTION_NON_CODED))&& o.getValueText() != null && !"".equals(o.getValueText()))
+			{
+				if(display.length() != 0)
+				{
+					display.append(", ");
+				}
+				display.append(o.getValueAsString(Context.getLocale()));
+			}
+		}
+		return display.toString();
+	}
+	
+	public String getStiInfectionForDisplay(){
+		StringBuilder display = new StringBuilder("");
+		List<Obs> obs = getSTIList();
+		
+		for(Obs o: obs)
+		{
+			if(display.length() != 0)
+			{
+				display.append(", ");
+			}
+			display.append(o.getValueAsString(Context.getLocale()));
+			
+		}
+		return display.toString();
 	}
 	
 	public boolean isOpportunisticInfectionTrue(){
-		Obs o = getOI();
-		if (o != null && o.getConcept().getConceptId().equals(ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED) && o.getValueCoded() != null && ! ((
-				o.getValueCoded().getConceptId().equals(ConceptDictionary.OTHER_NON_CODED)
-				|| o.getValueCoded().getConceptId().equals(ConceptDictionary.NONE)
-				|| o.getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_CARDIOVASCULAR_DISEASE)
-				|| o.getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_CEREBRAL_LYMPHOMA)
-				|| o.getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_DEPRESSION)
-				|| o.getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_KAPOSIS_SARCOMA)
-				|| o.getValueCoded().getConceptId().equals(ConceptDictionary.CURRENT_OI_NEUROLOGICAL_DEFICIT)
-		    )))
-			return Boolean.TRUE;
-		if (o != null && o.getConcept().getConceptId().equals(ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION) && o.getValueAsBoolean() != null && o.getValueAsBoolean().equals(true))
-			return Boolean.TRUE;
-		return false;
+		boolean isOpportunisitic = false;
+		List<Obs> obs = getOIList();
+		for(Obs o: obs)
+		{
+			if (o != null && o.getValueCoded() != null && OIMapping.getOIs().contains(o.getValueCoded().getConceptId()))
+			{
+				isOpportunisitic = true;
+			}
+			if (o != null && (o.getConcept().getConceptId().equals(ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED_NON_CODED) || o.getConcept().getConceptId().equals(ConceptDictionary.OPPORTUNISTIC_INFECTION_NON_CODED)) && o.getValueText() != null && !"".equals(o.getValueText()))
+			{
+				isOpportunisitic = true;
+			}
+		}
+		return isOpportunisitic;
 	}
+
 	
 	public boolean isOpportunisticInfectionFalse(){
-		Obs o = getOI();
-		if (o != null && o.getValueCoded() != null && o.getValueCoded().getConceptId().equals(ConceptDictionary.NONE))
-			return Boolean.TRUE;
-		if (o != null && o.getConcept().getConceptId().equals(ConceptDictionary.CURRENT_OPPORTUNISTIC_INFECTION) && o.getValueAsBoolean() != null && o.getValueAsBoolean().equals(false))
-			return Boolean.TRUE;
-		return false;
+		return !isOpportunisticInfectionTrue();
 	}
 	
 	public boolean isStiTrue(){
-		Obs o = getOI();
-		if (o != null &&  isOpportunisticInfectionTrue() && o.getValueCoded() != null && getOIsThatAreSTIs().contains(o.getValueCoded().getConceptId()))
-			return true;
-		return false;
+		boolean isSti = false;
+		
+		List<Obs> obs = getOIList();
+		Obs sti = getSTI();
+		if(sti != null)
+		{
+			obs.add(sti);
+		}
+		for(Obs o: obs)
+		{
+			if (o != null && o.getValueCoded() != null && getOIsThatAreSTIs().contains(o.getValueCoded().getConceptId()))
+				isSti = true;
+		}
+		return isSti;
 	}
 	
 	public boolean isStiFalse(){
-			//pass -- no point in putting any logic in here
-		return false;
+		return !isStiTrue();
 	}
 	
-	
+	public String getAdherenceLevel()
+	{
+		if(getNumberOfMissedDosesInThePastMonth() != null)
+		{
+			Double adherenceObs = getNumberOfMissedDosesInThePastMonth().getValueNumeric();
+			
+			int adherence = 0;
+			if(adherenceObs != null)
+			{
+				adherence = adherenceObs.intValue();
+			}
+			
+			if(adherence <= 3)
+			{
+				return "Tresbon";
+			}
+			
+			if(adherence > 3 && adherence <= 8)
+			{
+				return "Bon";
+			}
+			
+			if(adherence > 8)
+			{
+				return "Faible";
+			}
+		}
+		
+		return null;
+		
+	}
 	
 	public String getFunctionalAbilityOfThePatientString() {
 		Obs o =  getFunctionalAbilityOfThePatient();
@@ -281,11 +431,41 @@ public class VisitGroup {
 	public static Set<Integer> getOIsThatAreSTIs(){
 		Set<Integer> ret = new HashSet<Integer>();
 		Concept c = Context.getConceptService().getConcept(ConceptDictionary.OIS_THAT_ARE_STIS);
-		for (ConceptSet cs : c.getConceptSets()){
-			ret.add(cs.getConcept().getConceptId());
+		if(c != null)
+		{
+			for (ConceptSet cs : c.getConceptSets()){
+				ret.add(cs.getConcept().getConceptId());
+			}
+		}
+		Concept d = Context.getConceptService().getConcept(ConceptDictionary.STI_SET);
+		if(d != null)
+		{
+			for (ConceptSet cs : d.getConceptSets()){
+				ret.add(cs.getConcept().getConceptId());
+		}
 		}
 		return ret;
 	}
 
+	public String getCalculatedZScoreHeight() {
+		Obs height = getHeight();
+		
+		return whoCalculations.getCalculatedZScoreHeight(height);
+	}
+	
+	public String getCalculatedZScoreWeight() {
+		Obs weight = getWeight();
+		
+		return whoCalculations.getCalculatedZScoreWeight(weight);
+		
+	}
+	
+	public String getCalculatedHeightWeightPercentile()
+	{
+		Obs weight = getWeight();
+		Obs height = getHeight();
+		
+		return whoCalculations.getCalculatedHeightWeightPercentile(height, weight);
+	}
 
 }

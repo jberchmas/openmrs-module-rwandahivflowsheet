@@ -2,18 +2,19 @@
     <macros>
 		@PATIENT_IDENTIFIER@=IMB ID
     	
-		@MEDICAL_IMAGE_CONSTRUCT@=2472
-		@TEST_ORDERED@=1271
-		@TESTS_ORDERED_NON_CODED@=2153
+		@MEDICAL_IMAGE_CONSTRUCT@=3ce43fb8-26fe-102b-80cb-0017a47871b2
+		@TEST_ORDERED@=3cd937e4-26fe-102b-80cb-0017a47871b2
+		@TESTS_ORDERED_NON_CODED@=3ce1654a-26fe-102b-80cb-0017a47871b2
 		@ASSESSMENT_COMMENTS@=1364
 		
-		@XRAY_CHEST@=12
-		@COMPUTED_TOMOGRAPHY_SCAN_HEAD@=846
-		@OTHER_NON_CODED@=5622
-		
+		@XRAY_CHEST@=3ccc6186-26fe-102b-80cb-0017a47871b2
+		@COMPUTED_TOMOGRAPHY_SCAN_HEAD@=3cd498d8-26fe-102b-80cb-0017a47871b2
+		@OTHER_NON_CODED@=3cee7fb4-26fe-102b-80cb-0017a47871b2
+		<!-- 277e342c-79c6-470a-8427-e737d3114ba4 ELECTRONIC_RECORD_MATCHES_PAPER_FORM 7084 -->
+		@ELECTRONIC_RECORD_MATCHES_PAPER_FORM@=04260890-38c4-4f07-9417-bbc3f0647f1e
     </macros>
 
-	<link type="text/css" rel="stylesheet" href="/openmrs/moduleResources/rwandahivflowsheet/adult_hiv_flowsheet_new_row.css" />
+	<link type="text/css" rel="stylesheet" href="/openmrs/moduleResources/rwandahivflowsheet/hiv_flowsheet_new_row.css" />
 
 	<table border="2" cellspacing="0" cellpadding="6" width="100%">
 		<tr>
@@ -23,7 +24,7 @@
 				</b>
 			</td>
 			<td>
-				Date: <encounterDate default="today"/>
+				Date: <encounterDate default="today" disallowMultipleEncountersOnDate="warn"/>
 			</td>
 			<td>
 				Clinique / Clinic: <encounterLocation />
@@ -51,9 +52,19 @@
 			</obsgroup>
 		</table>
 	</section>
+	<br/>
+		<table>
+			<tr>
+			  <th>Was all the data just entered present on the flowsheet (not only found on RDV)?</th>
+			  <td>
+			     <obs conceptId="$@ELECTRONIC_RECORD_MATCHES_PAPER_FORM@" style="radio"/>
+			  </td>
+			</tr>
+		</table>
 	
 	<br />
 	<center><submit /></center>
+	<encounterVoided/>
 	<br />
 	
 <script type="text/javascript">

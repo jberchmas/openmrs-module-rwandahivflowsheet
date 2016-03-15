@@ -1,3 +1,5 @@
+@media print{@page {size: landscape}}
+
 * { margin:0px; padding: 0px; font-size: 10px; font-family: Times; }
 
 sup { font-size: 6px; }
@@ -14,8 +16,30 @@ div#footer	{ display: none; 	}
 div#content	{ padding: 1px; 	}
 		
 .value-label	{ font-weight: bold; }
-.value-data 	{ color: #2200FF; }
-.value-date 	{ color: #2200FF; }
+.value-data 	{ 
+				  font-family: ‘Lucida Console’, Monaco, monospace;
+				  font-size: 11px;
+				  color: #003366;
+				}
+.value-date 	{ font-family: ‘Lucida Console’, Monaco, monospace;
+				  font-size: 11px;
+				  color: #003366;
+				 }
+
+.value-label-big { 
+					font-weight: bold;
+					font-size: 14px;
+				 }
+.value-data-big  { 
+					color: #003366; 
+					font-size: 14px;
+					font-family: ‘Lucida Console’, Monaco, monospace;
+				 }
+.value-calculated 	{ 
+				  font-family: ‘Lucida Console’, Monaco, monospace;
+				  font-size: 11px;
+				  color: #5B1094;
+				}
 		
 .checkbox-label {
 	padding-left: 3px;
@@ -29,6 +53,17 @@ div#content	{ padding: 1px; 	}
 	display: inline-block;
 	vertical-align: middle;
 	font-size: 7px;
+}
+
+.checkbox-box-ticked {
+	outline: 1px solid black;
+	width: 9px;
+	text-align: center;
+	display: inline-block;
+	vertical-align: middle;
+	font-size: 7px;
+	background-color: #000000;
+	color: #003366;
 }
 
 .form-header {
@@ -113,6 +148,9 @@ td.section-emr	{ text-align: center; 	}
 #col-visits-10 { font-weight: normal; text-align: left; width: 9%; background-color: #FFFFFF; }
 #col-visits-11 { font-weight: normal; text-align: left; width: 9%; background-color: #FFFFFF; }
 #col-visits-12 { font-weight: normal; text-align: left; width: 9%; background-color: #FFFFFF; }
+#col-visits-13 { font-weight: normal; text-align: left; width: 9%; background-color: #FFFFFF; }
+#col-visits-14 { font-weight: normal; text-align: left; width: 9%; background-color: #FFFFFF; }
+#col-visits-15 { font-weight: normal; text-align: left; width: 9%; background-color: #FFFFFF; }
 
 #col-images-emr-1 { font-weight: normal; text-align: center; width: 1%; background-color: #FFFFFF; }
 #col-images-type { font-weight: normal; text-align: left; width: 44%; background-color: #FFFFFF; }
@@ -121,11 +159,22 @@ td.section-emr	{ text-align: center; 	}
 
 .tickLabel { font-size: 8px; }
 
+.heightForAge {	width: 900px; height: 600px; margin: 10px; }
+.lengthForAge {	width: 900px; height: 600px; margin: 10px; }
+.weightForAgeBirth {	width: 900px; height: 600px; margin: 10px; }
+.weightForAge {	width: 900px; height: 600px; margin: 10px; }
+.weightForAgeTotal {	width: 900px; height: 600px; margin: 10px; }
+.heightForAgeTotal {	width: 900px; height: 600px; margin: 10px; }
 .cd4Graph {	width: 900px; height: 600px; margin: 10px; }
+.cd4PercentGraph {	width: 900px; height: 600px; margin: 10px; }
+.weightForLength {	width: 900px; height: 600px; margin: 10px; }
+.weightForHeight {	width: 900px; height: 600px; margin: 10px; }
+.bmiForAge {	width: 900px; height: 600px; margin: 10px; }
 
 .bmiGraph {	width: 720px; height: 540px; }
 
 .viralLoadGraph {	width: 800px; height: 600px; }
+.graphs h1 { font-size: 20px; }
 
 .new-item-button-row { display: none; }
 

@@ -30,7 +30,7 @@ public class ConceptDictionary {
 
 	/** Anaphylaxie */
 	public static int ANAPHYLAXIS;
-	/** Anémie */
+	/** Anemie */
 	public static int ANEMIA;
 	public static int ASSESSMENT_COMMENTS;
 	public static int ASTHMA;
@@ -49,6 +49,7 @@ public class ConceptDictionary {
 	public static int CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED;
 	public static int CURRENT_OPPORTUNISTIC_INFECTION_OR_COMORBIDITY_CONFIRMED_OR_PRESUMED_NON_CODED;
 	
+	public static int CURRENT_OI;
 	//these should only get shown once total
 	public static int CURRENT_OI_DEPRESSION;
 	public static int CURRENT_OI_CARDIOVASCULAR_DISEASE;
@@ -182,7 +183,7 @@ public class ConceptDictionary {
 	public static int HEIGHT_CM ;
 	public static int HEMATOCRIT ;
 	public static int HEMOGLOBIN ;
-	/** Hépatite */
+	/** Hepatite */
 	public static int HEPATITIS ;
 
 	public static int HIV_VIRAL_LOAD;
@@ -190,7 +191,7 @@ public class ConceptDictionary {
 	public static int HOSPITALIZATION_CONSTRUCT;
 	public static int HOSPITALIZATION_DISCHARGE_DATE;
 	public static int INTERACTION_WITH_TUBERCULOSIS_DRUG;
-	/** Ictère */
+	/** Ictere */
 	public static int JAUNDICE;
 	public static int LABORATORY_EXAMINATIONS_CONSTRUCT;
 
@@ -205,7 +206,7 @@ public class ConceptDictionary {
 	public static int MENINGITIS;
 	public static int METHOD_OF_FAMILY_PLANNING;
 	public static int MONTHS;
-	/** Nausées */
+	/** Nausees */
 	public static int NAUSEA;
 	public static int NEGATIVE;
 	/** Cauchemars */
@@ -213,6 +214,8 @@ public class ConceptDictionary {
 	public static int NO ;
 	public static int NON_REACTIVE;
 
+	public static int NEXT_VISIT;
+	
 	public static int NONE;
 	public static int NOT_DONE;
 	public static int NUMBER_OF_DOSES_OF_ANTIRETROVIRALS_MISSED_IN_THE_PAST_MONTH;
@@ -250,18 +253,20 @@ public class ConceptDictionary {
 	public static int PREVIOUS_DIAGNOSIS;
 
 	public static int PREVIOUS_DIAGNOSIS_CONSTRUCT;
+	
+	public static int PREVIOUS_DIAGNOSIS_DATE;
 
 	public static int PULMONARY_EFFUSION;
 
 	public static int RAPID_PLASMIN_REAGENT;
 
-	/** Eruption cutanée légère */
+	/** Eruption cutanee legere */
 	public static int RASH_MINOR;
 
-	/** Eruption cutanée modérée */
+	/** Eruption cutanee moderee */
 	public static int RASH_MODERATE;
 
-	/** Eruption cutanée sévère (desquamant) */
+	/** Eruption cutanee severe (desquamant) */
 	public static int RASH_SEVERE;
 
 	public static int REACTIVE;
@@ -319,6 +324,12 @@ public class ConceptDictionary {
 	
 	public static int TREATMENT_GROUP;
 	
+	public static int INFORMED_STATUS;
+	
+	public static int PATIENT_INFORMED;
+	
+	public static int PATIENT_NOT_INFORMED;
+	
 	
 	/** Vomissements */
 	public static int VOMITING;
@@ -337,7 +348,13 @@ public class ConceptDictionary {
 	
 	public static int PatientIdentiferId_Tracnet;
 	
-	public static int ProgramId_AdultHIVProgram;
+	public static Integer ProgramId_AdultHIVProgram;
+	public static Integer ProgramId_PediHIVProgram;
+	public static Integer ProgramId_PMTCT_mother;
+	public static Integer ProgramId_Exposed_Infant_mother;
+	
+	public static Integer ADULT_FLOWSHEET_ENCOUNTER_ID;
+	public static Integer PEDI_FLOWSHEET_ENCOUNTER_ID;
 	
 	public static String ANTIRETROVIRAL_DRUGS = "ANTIRETROVIRAL DRUGS";
 	public static String TUBERCULOSIS_TREATMENT_DRUGS = "TUBERCULOSIS TREATMENT DRUGS";
@@ -347,5 +364,72 @@ public class ConceptDictionary {
 	public static int PROPHYLAXIS_REASON_FOR_STOPPING_ABANDONED;
 	public static int PROPHYLAXIS_REASON_FOR_STOPPING_OUT_OF_STOCK;
 	public static int PROPHYLAXIS_REASON_FOR_STOPPING_CD4_IMPROVEMENT;
+	public static int PROPHYLAXIS_REASON_FOR_STOPPING_TERMINE;
+	
+	public static int HIV_DIAGNOSIS_DATE;
+
+	public static int DRUG_ISONIAZID;
+	
+	public static int Z_SCORE_WEIGHT;
+	
+	public static int Z_SCORE_HEIGHT;
+	
+	public static int HEIGHT_WEIGHT_PERCENTILE;
+	
+	public static int ABDOMINAL_ULTRASOUND;
+	
+	public static int CD4_PERCENTAGE;
+	
+	public static int TREATMENT_COMPLETE;
+	
+	public static int OPPORTUNISTIC_INFECTION;
+	
+	public static int OPPORTUNISTIC_INFECTION_NON_CODED;
+	
+	public static int OPPORTUNISTIC_INFECTION_SET;
+	
+	public static int OPPORTUNISTIC_INFECTION_START_DATE;
+	
+	public static int OPPORTUNISTIC_INFECTION_COMMENTS;
+	
+	public static int STI_INFECTION;
+	
+	public static int STI_INFECTION_NON_CODED;
+	
+	public static int STI_SET;
+	
+	public static int ADULT_ALLERGY_FORM;
+	
+	public static int ADULT_HOSPITALISATION_FORM;
+	
+	public static int ADULT_OI_FORM;
+	
+	public static int ADULT_PROBLEM_FORM;
+	
+	public static int ADULT_VISIT_FORM;
+	
+	public static int ADULT_LAB_FORM;
+	
+	public static int ADULT_IMAGE_FORM;
+	
+	public static int PEDI_ALLERGY_FORM;
+	
+	public static int PEDI_HOSPITALISATION_FORM;
+	
+	public static int PEDI_OI_FORM;
+	
+	public static int PEDI_PROBLEM_FORM;
+	
+	public static int PEDI_VISIT_FORM;
+	
+	public static int PEDI_LAB_FORM;
+	
+	public static int PEDI_IMAGE_FORM;
+	
+	
+
+	private ConceptDictionary() {
+	    org.openmrs.module.rwandahivflowsheet.web.MetadataHelper.setupConstants();
+	}
 
 }

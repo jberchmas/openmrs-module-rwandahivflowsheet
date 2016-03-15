@@ -13,8 +13,9 @@
 	session.removeAttribute(WebConstants.OPENMRS_ERROR_ATTR);
 	session.removeAttribute(WebConstants.OPENMRS_ERROR_ARGS);
 %>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
 	<head>
+	    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
 		<openmrs:htmlInclude file="${pageContext.request.contextPath}/scripts/jquery/jquery-1.3.2.min.js"/>
 		<script type="text/javascript">
 			var $j = jQuery.noConflict(); 
@@ -38,15 +39,8 @@
 				});
 			});
 		</script>
-
-		<c:choose>
-			<c:when test="${!empty pageTitle}">
-				<title>${pageTitle}</title>
-			</c:when>
-			<c:otherwise>
-				<title><spring:message code="openmrs.title"/></title>
-			</c:otherwise>
-		</c:choose>
+		<c:set var="formData" value="${formData}"/>
+		<jsp:useBean id="formData" type="org.openmrs.module.rwandahivflowsheet.web.model.PediHivFlowsheetFormData" />
 	</head>
 
 	<body>
@@ -62,7 +56,7 @@
 						<openmrs:authentication/>
 						<c:if test="${not empty authenticatedUser}">
 							logged in as
-							<a href="javascript:showPopup('<spring:message code="rwandahivflowsheet.userPrefs.title" javaScriptEscape="true"/>', openmrsContextPath + rwandahivflowsheet, true);">
+							<a href="javascript:showPopup('<spring:message code="rwandahivflowsheet.userPrefs.title" javaScriptEscape="true"/>', openmrsContextPath + 'module/rwandahivflowsheet/userPrefs.form', true);">
 								${authenticatedUser.username}
 							</a>
 							<a href='${pageContext.request.contextPath}/logout'><spring:message code="header.logout" /></a>
@@ -77,3 +71,18 @@
 				<c:if test="${err != null}">
 					<div id="openmrs_error"><spring:message code="${err}" text="${err}" arguments="${errArgs}"/></div>
 				</c:if>
+				
+				<c:set var="FormatDate_General" value="dd/MM/yyyy"/>
+				<c:set var="DateTextPlaceHolder" value="__/__/____"/>
+				
+				<openmrs:htmlInclude file="${pageContext.request.contextPath}/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js"/>
+				<link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css" media="screen" />
+				
+				<link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/moduleResources/rwandahivflowsheet/hivflowsheet.css" media="screen" />
+				<link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/moduleResources/rwandahivflowsheet/hivflowsheetPrint.css" media="print" />
+						
+				<openmrs:htmlInclude file="${pageContext.request.contextPath}/moduleResources/rwandahivflowsheet/flot/excanvas.min.js"/>
+				<openmrs:htmlInclude file="${pageContext.request.contextPath}/moduleResources/rwandahivflowsheet/flot/jquery.flot.min.js"/>
+				
+				
+								

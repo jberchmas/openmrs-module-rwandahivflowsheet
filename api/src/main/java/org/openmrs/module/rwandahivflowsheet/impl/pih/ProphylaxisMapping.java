@@ -47,6 +47,12 @@ public class ProphylaxisMapping extends DrugOrder {
 				return true;
 			return false;
 		}
+		public boolean isTermine(){
+			if (drugOrder != null && drugOrder.getDiscontinuedReason() != null 
+					&& drugOrder.getDiscontinuedReason().getConceptId().equals(ConceptDictionary.PROPHYLAXIS_REASON_FOR_STOPPING_TERMINE))
+				return true;
+			return false;
+		}
 		public boolean isReasonForStoppingOther(){
 			if (drugOrder != null && drugOrder.getDiscontinuedReason() != null 
 					&& !isCd4Improved() && !isOutOfStock() && !isAbandoned() && !isToxicity())
@@ -76,6 +82,14 @@ public class ProphylaxisMapping extends DrugOrder {
 				return true;	
 			return false;
 		}	
+		
+		public boolean isIsoniazid(){
+			if (drugOrder != null && drugOrder.getConcept() != null 
+					&& drugOrder.getConcept().getConceptId().equals(ConceptDictionary.DRUG_ISONIAZID))
+				return true;	
+			return false;
+		}
+		
 		public boolean isDapsone(){
 			if (drugOrder != null && drugOrder.getConcept() != null 
 					&& drugOrder.getConcept().getConceptId().equals(ConceptDictionary.DRUG_DAPSONE))

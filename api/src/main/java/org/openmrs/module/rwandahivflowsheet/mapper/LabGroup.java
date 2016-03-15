@@ -190,6 +190,15 @@ public class LabGroup {
 		}
 		return null;
 	}
+
+	public Obs getCd4Percentage() {
+		for(Lab lab : labs) {
+			Obs obs = lab.getCd4Percentage();
+			if(obs != null)
+				return obs;
+		}
+		return null;
+	}
 	
 	public Obs getViralLoad() {
 		for(Lab lab : labs) {
@@ -203,19 +212,27 @@ public class LabGroup {
 	public String getOtherTests() {
 		StringBuilder builder = new StringBuilder();
 		for(Lab lab : labs) {
-			Obs obs = lab.getOtherLabTestName();
-			boolean nameAdded = false;
-			if(obs != null && obs.getValueAsString(null) != null) {
-				if(builder.length() > 0)
-					builder.append("; ");
-				builder.append(obs.getValueAsString(null));
-				nameAdded = true;
-			}
+			int index = 0;
+			List<Obs> results = lab.getOtherLabTestResult();
+			for(Obs obs: lab.getOtherLabTestName())
+			{
+				boolean nameAdded = false;
+				if(obs != null && obs.getValueAsString(null) != null) {
+					if(builder.length() > 0)
+						builder.append("; ");
+					builder.append(obs.getValueAsString(null));
+					nameAdded = true;
+				}
 			
-			obs = lab.getOtherLabTestResult();
-			if(obs != null && obs.getValueAsString(null) != null && nameAdded) {
-				builder.append(" = ");
-				builder.append(obs.getValueAsString(null));
+				if(results.size() > index)
+				{
+					obs = results.get(index);
+					if(obs != null && obs.getValueAsString(null) != null && nameAdded) {
+						builder.append(" = ");
+						builder.append(obs.getValueAsString(null));
+					}
+				}
+				index++;
 			}
 		}
 		return builder.toString();		

@@ -15,6 +15,7 @@
     	<property name="mappings">
             <props>
 	           <prop key="module/@MODULE_ID@/adulthivflowsheet.form">adulthivflowsheetFormController</prop>
+	           <prop key="module/@MODULE_ID@/pedihivflowsheet.form">pedihivflowsheetFormController</prop>
 		    </props>
 		</property>
     </bean>
@@ -23,6 +24,11 @@
     <bean id="adulthivflowsheetFormController" class="org.openmrs.module.rwandahivflowsheet.web.controller.AdultHivFlowsheetFormController">
     	<property name="commandName"><value>patient</value></property>
 		<property name="formView"><value>/module/@MODULE_ID@/adulthivflowsheet</value></property>
+    </bean>
+    
+    <bean id="pedihivflowsheetFormController" class="org.openmrs.module.rwandahivflowsheet.web.controller.PediHivFlowsheetFormController">
+    	<property name="commandName"><value>patient</value></property>
+		<property name="formView"><value>/module/@MODULE_ID@/pedihivflowsheet</value></property>
     </bean>
 
     <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>

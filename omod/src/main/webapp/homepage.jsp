@@ -6,7 +6,11 @@
 	<img src="${pageContext.request.contextPath}/moduleResources/rwandamoh/images/rwanda300.png"/>
 </div>
 
+<!--  DT:  this jsp doesn't seem to be used at all in this module, i.e., there's no controller, and it points to the rwandamoh module.  Does this even still exist?
+by commening this out, it allows removal of ui.springmvc dependency
 <ui:appList apps="${apps}"/>
+-->
+
 
 <div id="footer">
 	<div id="powered-by">

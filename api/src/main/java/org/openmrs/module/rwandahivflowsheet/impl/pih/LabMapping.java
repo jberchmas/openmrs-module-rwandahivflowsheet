@@ -1,7 +1,10 @@
 package org.openmrs.module.rwandahivflowsheet.impl.pih;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.module.rwandahivflowsheet.mapper.Lab;
 
@@ -39,18 +42,19 @@ public class LabMapping extends ObsMapping implements Comparable<LabMapping>, La
 	@Override
 	public Date getDate() {
 		
-		if(getObs().getGroupMembers() != null) {
-			for(Obs group : getObs().getGroupMembers()) {
-				if (!group.isVoided()){
-					if(group.getConcept().getConceptId().equals(ConceptDictionary.DATE_OF_LABORATORY_TEST))
-						if(group.getValueDatetime() != null)
-							return group.getValueDatetime();
-				}
-			}
-		}
-		
-		if (getObs().getEncounter() != null && getObs().getEncounter().getEncounterDatetime() != null)
-			return getObs().getEncounter().getEncounterDatetime();
+//		return date;
+//		if(getObs().getGroupMembers() != null) {
+//			for(Obs group : getObs().getGroupMembers()) {
+//				if (!group.isVoided()){
+//					if(group.getConcept().getConceptId().equals(ConceptDictionary.DATE_OF_LABORATORY_TEST))
+//						if(group.getValueDatetime() != null)
+//							return group.getValueDatetime();
+//				}
+//			}
+//		}
+//		
+//		if (getObs().getEncounter() != null && getObs().getEncounter().getEncounterDatetime() != null)
+//			return getObs().getEncounter().getEncounterDatetime();
 		
 		return getObsDate();
 	}
@@ -170,6 +174,11 @@ public class LabMapping extends ObsMapping implements Comparable<LabMapping>, La
 	public Obs getRpr() {
 		return getObsOfType(ConceptDictionary.RAPID_PLASMIN_REAGENT);
 	}
+
+		@Override
+	public Obs getCd4Percentage() {
+		return getObsOfType(ConceptDictionary.CD4_PERCENTAGE);
+	}
 	
 //	public boolean isRprPositive() {
 //		Obs obs = getRpr();
@@ -210,70 +219,62 @@ public class LabMapping extends ObsMapping implements Comparable<LabMapping>, La
 	
 	
 	@Override
-	public Obs getOtherLabTestName() {
-		Obs o = getOtherLabTestNameHelper(getObs());
-		return o;
+	public List<Obs> getOtherLabTestName() {
+		return getOtherLabTestNameHelper(getObs());
 	}
 	
 
-	public Obs getOtherLabTestNameHelper(Obs o) {
+	public List<Obs> getOtherLabTestNameHelper(Obs o) {
 		Obs ret = null;
+		List<Obs> names = new ArrayList<Obs>();
 		if(o != null && o.getConcept().getConceptId().equals(ConceptDictionary.OTHER_LAB_TEST_CONSTRUCT)) {
 			for(Obs group : o.getGroupMembers()) {
 				if (!group.isVoided()){
-					if(group.getConcept().getConceptId().equals(ConceptDictionary.TESTS_ORDERED)) {
-						ret = group;
-						break;
+					if(group.getConcept().getConceptId().equals(ConceptDictionary.TESTS_ORDERED) && group.getValueCoded() != null && !group.getValueCoded().getConceptId().equals(ConceptDictionary.OTHER_NON_CODED)) {
+						names.add(group);
+					}
+					
+					if (group.getConcept().getConceptId().equals(ConceptDictionary.OTHER_LAB_TEST_NAME)){
+						names.add(group);
 					}
 				}
 			}
-			if (ret != null && ret.getValueCoded() != null && ret.getValueCoded().getConceptId().equals(ConceptDictionary.OTHER_NON_CODED)){
-				boolean nameFound = false;
-				for (Obs group : o.getGroupMembers()){
-					if (!group.isVoided() && group.getConcept().getConceptId().equals(ConceptDictionary.OTHER_LAB_TEST_NAME)){
-						ret = group;
-						nameFound = true;
-						break;
-					}
-				}
-				//if we found 'other non-coded, but no 'other', pass.
-				if (!nameFound)
-					ret = null;
-			}
+			
 		}
 		
 		if (o != null && ret == null && o.getConcept().getConceptId().equals(ConceptDictionary.LABORATORY_EXAMINATIONS_CONSTRUCT)){
 			for (Obs oInner : o.getGroupMembers()){
 				if (!oInner.isVoided() && oInner.getConcept().getConceptId().equals(ConceptDictionary.OTHER_LAB_TEST_CONSTRUCT))
-					return getOtherLabTestNameHelper(oInner);
+					names.addAll(getOtherLabTestNameHelper(oInner));
 			}
 		}
-		return ret;
+		return names;
 	}
 	
 	@Override
-	public Obs getOtherLabTestResult() {
+	public List<Obs> getOtherLabTestResult() {
 		return getOtherLabTestResultHelper(getObs());
 	}
 	
 
-	public Obs getOtherLabTestResultHelper(Obs o) {
+	public List<Obs> getOtherLabTestResultHelper(Obs o) {
+		List<Obs> obsList = new ArrayList<Obs>();
 		if(o != null && o.getConcept().getConceptId().equals(ConceptDictionary.OTHER_LAB_TEST_CONSTRUCT)) {
 			for(Obs group : o.getGroupMembers()) {
 				if (!group.isVoided()){
 					if(group.getConcept().getConceptId().equals(ConceptDictionary.OTHER_LAB_TEST_RESULT))
-						return group;
+						obsList.add(group);
 				}
 			}
 		}
 		if (o != null && o.getConcept().getConceptId().equals(ConceptDictionary.LABORATORY_EXAMINATIONS_CONSTRUCT)){
 			for (Obs oInner : o.getGroupMembers()){
 				if (!oInner.isVoided() && oInner.getConcept().getConceptId().equals(ConceptDictionary.OTHER_LAB_TEST_CONSTRUCT)){
-					return getOtherLabTestResultHelper(oInner);
+					obsList.addAll(getOtherLabTestResultHelper(oInner));
 				}
 			}
 		}
-		return null;
+		return obsList;
 	}
 
 	/* (non-Javadoc)
@@ -304,5 +305,15 @@ public class LabMapping extends ObsMapping implements Comparable<LabMapping>, La
 			return 1;
 		return getDate().compareTo(obj.getDate());
 	}
+	
+//	@Override
+//	public Encounter getEncounter() {
+//		if (this.getObs() != null  && this.getObs().getEncounter() != null  && this.getObs().getEncounter().getForm() != null){
+//					if (this.getObs().getEncounter().getForm().getFormId().equals(Integer.valueOf(ConceptDictionary.ADULT_LAB_FORM))
+//							|| this.getObs().getEncounter().getForm().getFormId().equals(Integer.valueOf(ConceptDictionary.PEDI_LAB_FORM)))
+//						return this.getObs().getEncounter();
+//		}
+//		return null;
+//	}
 	
 }

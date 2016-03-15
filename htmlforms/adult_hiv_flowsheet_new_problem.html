@@ -2,21 +2,23 @@
     <macros>
 		@PATIENT_IDENTIFIER@=IMB ID
     	
-		@CHRONIC_CARE_CONSTRUCT@=6958
-		@CHRONIC_CARE_DIAGNOSIS@=3683
-		@CHRONIC_CARE_DIAGNOSIS_NON_CODED@=6905
+		@CHRONIC_CARE_CONSTRUCT@=5a38854c-db5e-4d64-baae-e4c9dc2b7e1b
+		@CHRONIC_CARE_DIAGNOSIS@=bb7e04d8-3355-4fe8-9c87-98642eafab93
+		@CHRONIC_CARE_DIAGNOSIS_NON_CODED@=0814d34f-a6ab-408c-848b-c69c96b42f70
 		@ASSESSMENT_COMMENTS@=2880
 		
-		@ASTHMA@=5
-		@DIABETES@=3720
-		@EPILEPSY@=155
-		@HEART_FAILURE@=3468
-		@RENAL_FAILURE@=3681
+		@ASTHMA@=3ccc4bf6-26fe-102b-80cb-0017a47871b2
+		@DIABETES@=edf4ecc4-44f6-457a-b561-179f4426b16a
+		@EPILEPSY@=3cce0a90-26fe-102b-80cb-0017a47871b2
+		@HEART_FAILURE@=0670f6b9-5456-4bd3-86b1-846abc4fe2ba
+		@RENAL_FAILURE@=894f306e-a868-44b8-b580-93495e3cca4c
 		@OTHER_NON_CODED@=5622
+		<!-- 277e342c-79c6-470a-8427-e737d3114ba4 ELECTRONIC_RECORD_MATCHES_PAPER_FORM 7084 -->
+		@ELECTRONIC_RECORD_MATCHES_PAPER_FORM@=04260890-38c4-4f07-9417-bbc3f0647f1e
     </macros>
 
 	
-	<link type="text/css" rel="stylesheet" href="/openmrs/moduleResources/rwandahivflowsheet/adult_hiv_flowsheet_new_row.css" />
+	<link type="text/css" rel="stylesheet" href="/openmrs/moduleResources/rwandahivflowsheet/hiv_flowsheet_new_row.css" />
 	
 	<table border="2" cellspacing="0" cellpadding="6" width="100%">
 		<tr>
@@ -26,7 +28,7 @@
 				</b>
 			</td>
 			<td>
-				Date: <encounterDate default="today"/>
+				Date: <encounterDate default="today" disallowMultipleEncountersOnDate="warn"/>
 			</td>
 			<td>
 				Clinique / Clinic: <encounterLocation />
@@ -44,10 +46,10 @@
 				<th width="20%">CHRONIQUE DE DIAGNOSTIC DE SOINS /<br/>CHRONIC CARE DIAGNOSIS</th>
 				<td>
 					<obs conceptId="$@CHRONIC_CARE_DIAGNOSIS@" answerConceptId="$@ASTHMA@" answerLabel="Asthme/Asthma"/><br/>
-					<obs conceptId="$@CHRONIC_CARE_DIAGNOSIS@" answerConceptId="$@DIABETES@" answerLabel="Diab�te/Diabetes"/><br/>
+					<obs conceptId="$@CHRONIC_CARE_DIAGNOSIS@" answerConceptId="$@DIABETES@" answerLabel="Diabete/Diabetes"/><br/>
 					<obs conceptId="$@CHRONIC_CARE_DIAGNOSIS@" answerConceptId="$@EPILEPSY@" answerLabel="Epilepsie/Epilepsy"/><br/>
 					<obs conceptId="$@CHRONIC_CARE_DIAGNOSIS@" answerConceptId="$@HEART_FAILURE@" answerLabel="Cardiopathie/Heart Failure"/><br/>
-					<obs conceptId="$@CHRONIC_CARE_DIAGNOSIS@" answerConceptId="$@RENAL_FAILURE@" answerLabel="Insuffisance r�nale/Renal Failure"/><br/>
+					<obs conceptId="$@CHRONIC_CARE_DIAGNOSIS@" answerConceptId="$@RENAL_FAILURE@" answerLabel="Insuffisance renale/Renal Failure"/><br/>
 					Autre/Other:
 					<obs conceptId="$@CHRONIC_CARE_DIAGNOSIS@" id="chronicCareDiagnosis" /> 
 					<obs conceptId="$@CHRONIC_CARE_DIAGNOSIS_NON_CODED@" id="chronicCareDiagnosisNonCoded" size="40"/>
@@ -60,9 +62,19 @@
 			</obsgroup>
 		</table>
 	</section>
+	<br/>
+		<table>
+			<tr>
+			  <th>Was all the data just entered present on the flowsheet (not only found on RDV)?</th>
+			  <td>
+			     <obs conceptId="$@ELECTRONIC_RECORD_MATCHES_PAPER_FORM@" style="radio"/>
+			  </td>
+			</tr>
+		</table>
 	
 	<br />
 	<center><submit /></center>
+	<encounterVoided/>
 	<br />
 
 <script type="text/javascript">
