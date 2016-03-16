@@ -3,7 +3,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>rwandahivflowsheet</artifactId>
-	<version>0.5.5-SNAPSHOT</version>
+	<version>0.5.5</version>
 	<packaging>pom</packaging>
 	<name>rwandahivflowsheet</name>
 	<description>Parent project for rwandahivflowsheet</description>
@@ -14,7 +14,7 @@
 		<connection>scm:git:git@github.com:PIH/openmrs-module-rwandahivflowsheet.git</connection>
 		<developerConnection>scm:git:git@github.com:PIH/openmrs-module-rwandahivflowsheet.git</developerConnection>
 		<url>https://github.com/PIH/openmrs-module-rwandahivflowsheet/</url>
-        <tag>HEAD</tag>
+        <tag>0.5.5</tag>
     </scm>
 
 	<distributionManagement>
