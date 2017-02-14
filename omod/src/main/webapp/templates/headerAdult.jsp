@@ -16,7 +16,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
 	<head>
 	    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
-		<openmrs:htmlInclude file="${pageContext.request.contextPath}/scripts/jquery/jquery-1.3.2.min.js"/>
+		<openmrs:htmlInclude file="${pageContext.request.contextPath}/moduleResources/rwandahivflowsheet/scripts/jquery/jquery-1.3.2.min.js"/>
 		<script type="text/javascript">
 			var $j = jQuery.noConflict(); 
 		</script>
@@ -75,9 +75,9 @@
 				<c:set var="FormatDate_General" value="dd/MM/yyyy"/>
 				<c:set var="DateTextPlaceHolder" value="__/__/____"/>
 				
-				<openmrs:htmlInclude file="${pageContext.request.contextPath}/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js"/>
-				<link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css" media="screen" />
-						
+				<openmrs:htmlInclude file="${pageContext.request.contextPath}/moduleResources/rwandahivflowsheet/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css"/>
+                <openmrs:htmlInclude file="${pageContext.request.contextPath}/moduleResources/rwandahivflowsheet/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js"/>
+
 				<openmrs:htmlInclude file="${pageContext.request.contextPath}/moduleResources/rwandahivflowsheet/flot/excanvas.min.js"/>
 				<openmrs:htmlInclude file="${pageContext.request.contextPath}/moduleResources/rwandahivflowsheet/flot/jquery.flot.min.js"/>
 				
