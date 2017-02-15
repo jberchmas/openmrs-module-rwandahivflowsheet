@@ -46,6 +46,16 @@
 		<MODULE_PACKAGE>${project.parent.groupId}.${project.parent.artifactId}</MODULE_PACKAGE>
 	</properties>
 
+	<profiles>
+		<profile>
+			<id>1.11</id>
+			<properties>
+				<openMRSVersion>1.11.6</openMRSVersion>
+			</properties>
+		</profile>
+	</profiles>
+
+
 	<dependencies>
 
         <dependency>

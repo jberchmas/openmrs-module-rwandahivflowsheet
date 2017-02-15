@@ -139,7 +139,7 @@ public class PediHivFlowsheetFormData extends HivFlowsheetFormData {
 						{
 							if(dro.isDiscontinued(e.getKey()))
 							{
-								changeDate = dro.getDiscontinuedDate();
+								changeDate = dro.getEffectiveStopDate();
 							}
 						}
 					}
@@ -152,7 +152,7 @@ public class PediHivFlowsheetFormData extends HivFlowsheetFormData {
 				{
 					if(dro.isDiscontinuedRightNow())
 					{
-						changeDate = dro.getDiscontinuedDate();
+						changeDate = dro.getEffectiveStopDate();
 					}
 				}
 				if ((index == drugOrdersGroupedByStartAndEndDate.size() -1 && e.getValue().size() > 0 && changeRegimen(prevOrder, currentOrder)) || (drugOrdersGroupedByStartAndEndDate.size() == 1 && e.getValue().size() > 0 ))
@@ -331,11 +331,11 @@ public class PediHivFlowsheetFormData extends HivFlowsheetFormData {
     		
     		Set<String> reasons = new HashSet<String>();
     		for (DrugOrder dor :drugOrders){
-    			if (dor.getDiscontinuedReason() != null 
-    					 && (((dor.getDiscontinuedDate() != null && dor.getDiscontinuedDate().before(maxEndDate)) 
+    			if (dor.getEffectiveStopDate() != null
+    					 && (((dor.getEffectiveStopDate() != null && dor.getEffectiveStopDate().before(maxEndDate))
     							 ||   (dor.getAutoExpireDate() != null && dor.getAutoExpireDate().before(maxEndDate))))){
     				   
-    				   reasons.add(dor.getDiscontinuedReason().getBestName(Context.getLocale()).getName());
+    				   reasons.add(dor.getOrderReason().getBestName(Context.getLocale()).getName());
     				   
     			}    				
     		}

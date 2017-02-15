@@ -3,6 +3,7 @@ package org.openmrs.module.rwandahivflowsheet.impl.pih;
 import java.util.Date;
 
 import org.openmrs.DrugOrder;
+import org.openmrs.Order;
 import org.openmrs.api.context.Context;
 
 public class ProphylaxisMapping extends DrugOrder {
@@ -24,37 +25,37 @@ public class ProphylaxisMapping extends DrugOrder {
 		}
 		
 		public boolean isToxicity(){
-			if (drugOrder != null && drugOrder.getDiscontinuedReason() != null 
-					&& drugOrder.getDiscontinuedReason().getConceptId().equals(ConceptDictionary.PROPHYLAXIS_REASON_FOR_STOPPING_TOXICITY))
+			if (drugOrder != null && drugOrder.getEffectiveStopDate() != null && drugOrder.getAction().equals(Order.Action.DISCONTINUE)
+					&& drugOrder.getOrderReason().getConceptId().equals(ConceptDictionary.PROPHYLAXIS_REASON_FOR_STOPPING_TOXICITY))
 				return true;
 			return false;
 		}
 		public boolean isAbandoned(){
-			if (drugOrder != null && drugOrder.getDiscontinuedReason() != null 
-					&& drugOrder.getDiscontinuedReason().getConceptId().equals(ConceptDictionary.PROPHYLAXIS_REASON_FOR_STOPPING_ABANDONED))
+			if (drugOrder != null && drugOrder.getEffectiveStopDate() != null && drugOrder.getAction().equals(Order.Action.DISCONTINUE)
+					&& drugOrder.getOrderReason().getConceptId().equals(ConceptDictionary.PROPHYLAXIS_REASON_FOR_STOPPING_ABANDONED))
 				return true;
 			return false;
 		}
 		public boolean isOutOfStock(){
-			if (drugOrder != null && drugOrder.getDiscontinuedReason() != null 
-					&& drugOrder.getDiscontinuedReason().getConceptId().equals(ConceptDictionary.PROPHYLAXIS_REASON_FOR_STOPPING_OUT_OF_STOCK))
+			if (drugOrder != null && drugOrder.getEffectiveStopDate() != null && drugOrder.getAction().equals(Order.Action.DISCONTINUE)
+					&& drugOrder.getOrderReason().getConceptId().equals(ConceptDictionary.PROPHYLAXIS_REASON_FOR_STOPPING_OUT_OF_STOCK))
 				return true;
 			return false;
 		}
 		public boolean isCd4Improved(){
-			if (drugOrder != null && drugOrder.getDiscontinuedReason() != null 
-					&& drugOrder.getDiscontinuedReason().getConceptId().equals(ConceptDictionary.PROPHYLAXIS_REASON_FOR_STOPPING_CD4_IMPROVEMENT))
+			if (drugOrder != null && drugOrder.getEffectiveStopDate() != null && drugOrder.getAction().equals(Order.Action.DISCONTINUE)
+					&& drugOrder.getOrderReason().getConceptId().equals(ConceptDictionary.PROPHYLAXIS_REASON_FOR_STOPPING_CD4_IMPROVEMENT))
 				return true;
 			return false;
 		}
 		public boolean isTermine(){
-			if (drugOrder != null && drugOrder.getDiscontinuedReason() != null 
-					&& drugOrder.getDiscontinuedReason().getConceptId().equals(ConceptDictionary.PROPHYLAXIS_REASON_FOR_STOPPING_TERMINE))
+			if (drugOrder != null && drugOrder.getEffectiveStopDate() != null && drugOrder.getAction().equals(Order.Action.DISCONTINUE)
+					&& drugOrder.getOrderReason().getConceptId().equals(ConceptDictionary.PROPHYLAXIS_REASON_FOR_STOPPING_TERMINE))
 				return true;
 			return false;
 		}
 		public boolean isReasonForStoppingOther(){
-			if (drugOrder != null && drugOrder.getDiscontinuedReason() != null 
+			if (drugOrder != null && drugOrder.getEffectiveStopDate() != null
 					&& !isCd4Improved() && !isOutOfStock() && !isAbandoned() && !isToxicity())
 				return true;
 			return false;
@@ -65,7 +66,7 @@ public class ProphylaxisMapping extends DrugOrder {
 		}
 		public String getDiscontinueReasonOther(){
 			if (this.isReasonForStoppingOther())
-				return drugOrder.getDiscontinuedReason().getBestName(Context.getLocale()).getName();
+				return drugOrder.getOrderReason().getBestName(Context.getLocale()).getName();
 			return "";
 		}
 		
@@ -117,8 +118,8 @@ public class ProphylaxisMapping extends DrugOrder {
 		
 		public Date getStopDate(){
 			if (drugOrder != null){
-				if (drugOrder.getDiscontinuedDate() != null)
-					return drugOrder.getDiscontinuedDate();
+				if (drugOrder.getEffectiveStopDate() != null)
+					return drugOrder.getEffectiveStopDate();
 				if (drugOrder.getAutoExpireDate() != null)
 					return drugOrder.getAutoExpireDate();
 			}
@@ -127,7 +128,7 @@ public class ProphylaxisMapping extends DrugOrder {
 		
 		public Date getStartDate(){
 			if (drugOrder != null)
-				return drugOrder.getStartDate();
+				return drugOrder.getEffectiveStartDate();
 			return null;
 		}
 	

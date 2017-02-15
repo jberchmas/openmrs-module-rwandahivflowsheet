@@ -82,7 +82,7 @@ public class HivFlowsheetFormData extends FormDataModel {
 					TbEpisodeMapping tem = new TbEpisodeMapping();
 					tem.getTbDrugOrders().add(dor);
 					usedList.add(dor.getOrderId());
-					Date startDate = dor.getStartDate();
+					Date startDate = dor.getEffectiveStartDate();
 					Calendar cal = Calendar.getInstance();
 					cal.setTime(startDate);
 					cal.add(Calendar.DAY_OF_MONTH, Integer.valueOf((365/2 + 30)));
@@ -92,10 +92,10 @@ public class HivFlowsheetFormData extends FormDataModel {
 						//found a drug with equal start date or a start date within next 7 months:
 						//add this to drugOrderList in the same tb episode
 						if (!usedList.contains(dorInner.getOrderId()) && !dorInner.getConcept().getConceptId().equals(ConceptDictionary.TB_DRUG_AMOX_CLAV) 
-								&& dorInner.getStartDate().getTime() >= startDate.getTime() 
-								&& dorInner.getStartDate().getTime() <= endDate.getTime()){
+								&& dorInner.getEffectiveStartDate().getTime() >= startDate.getTime()
+								&& dorInner.getEffectiveStartDate().getTime() <= endDate.getTime()){
 							   //special handling for RHEZ, just in case there was data entry error -- this will always be initial phase
-								if (dorInner.getConcept().getConceptId().equals(ConceptDictionary.TB_DRUG_RHEZ) && dorInner.getStartDate().equals(dor.getStartDate())){
+								if (dorInner.getConcept().getConceptId().equals(ConceptDictionary.TB_DRUG_RHEZ) && dorInner.getEffectiveStartDate().equals(dor.getEffectiveStartDate())){
 									//this will always be initial phase
 									tem.getTbDrugOrders().add(0, dorInner);
 									usedList.add(dorInner.getOrderId());
@@ -196,18 +196,18 @@ public class HivFlowsheetFormData extends FormDataModel {
     	
     	for (DrugOrder dor : rawOrders){
     		//drug start dates:
-    		Set<DrugOrder> dorListOnStartDate = ret.get(dor.getStartDate());
+    		Set<DrugOrder> dorListOnStartDate = ret.get(dor.getEffectiveStartDate());
     		if (dorListOnStartDate == null)
     			dorListOnStartDate = new LinkedHashSet<DrugOrder>();
     		//now check all orders to see if they're active on that date also, and add if so:
     		for (DrugOrder dorInner : rawOrders){
-    			if (dorInner.isCurrent(dor.getStartDate()) && !dorListOnStartDate.contains(dorInner)) //only add each DrugOrder once.
+    			if (dorInner.isCurrent(dor.getEffectiveStartDate()) && !dorListOnStartDate.contains(dorInner)) //only add each DrugOrder once.
     				dorListOnStartDate.add(dorInner);
     		}
     		if (dorListOnStartDate.size() > 0)
-    			ret.put(dor.getStartDate(), dorListOnStartDate);
+    			ret.put(dor.getEffectiveStartDate(), dorListOnStartDate);
     		
-    		Date endDate = dor.getDiscontinuedDate();
+    		Date endDate = dor.getEffectiveStopDate();
     		if (endDate == null)
     			endDate = dor.getAutoExpireDate();
     		
@@ -235,12 +235,12 @@ public class HivFlowsheetFormData extends FormDataModel {
     	
     	for (DrugOrder dor : dors){
     		if (!usedDrugOrderIds.contains(dor.getOrderId())){
-    			if (dor.getStartDate() == null)
+    			if (dor.getEffectiveStartDate() == null)
 	    			continue;
-	    		Date endDate = dor.getDiscontinuedDate();
+	    		Date endDate = dor.getEffectiveStopDate();
 	    		if (endDate == null)
 	    			endDate = dor.getAutoExpireDate();
-	    		if (endDate == null || ((endDate != null && endDate.getTime() - dor.getStartDate().getTime() > (1000*60*60*24*30)))) // regimen that lasted more than 30 days, or there is no endDate specified
+	    		if (endDate == null || ((endDate != null && endDate.getTime() - dor.getEffectiveStartDate().getTime() > (1000*60*60*24*30)))) // regimen that lasted more than 30 days, or there is no endDate specified
 	    			ret.add(dor);
     		}
     	}

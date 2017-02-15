@@ -19,21 +19,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Cohort;
-import org.openmrs.Concept;
-import org.openmrs.Drug;
-import org.openmrs.DrugOrder;
-import org.openmrs.Encounter;
-import org.openmrs.EncounterType;
-import org.openmrs.Location;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
-import org.openmrs.PatientIdentifierType;
-import org.openmrs.PatientProgram;
-import org.openmrs.Program;
-import org.openmrs.Relationship;
-import org.openmrs.RelationshipType;
-import org.openmrs.User;
+import org.openmrs.*;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
@@ -443,10 +429,23 @@ public class FormDataModel {
 	public List<DrugOrder> getAllPatientDrugOrders(){
 		List<DrugOrder> ret = new ArrayList<DrugOrder>();
 		if (allPatientDrugOrders == null || allPatientDrugOrders.size() == 0){
-				List<DrugOrder> tmp  = Context.getOrderService().getDrugOrdersByPatient(this.getPatient());
+				List<DrugOrder> tmp  = new ArrayList<DrugOrder>();
+						//Context.getOrderService().getDrugOrdersByPatient(this.getPatient());
+				List<Order> orderList=Context.getOrderService().getAllOrdersByPatient(this.getPatient());
+
+			for (Order order : orderList) {
+				if ("org.openmrs.DrugOrder".equals(order.getOrderType().getJavaClassName()) && order instanceof DrugOrder
+						&& !order.getAction().equals(Order.Action.DISCONTINUE)) {
+					DrugOrder drugOrder = (DrugOrder) order;
+
+					tmp.add(drugOrder);
+				}
+			}
+
+
 		    	Collections.sort(tmp, new Comparator<DrugOrder>() {  //ascending
 		            public int compare(DrugOrder left, DrugOrder right) {
-		                if (left.getStartDate().getTime() < right.getStartDate().getTime()) 
+		                if (left.getEffectiveStartDate().getTime() < right.getEffectiveStartDate().getTime())
 		               	 return -1; 
 		                return 1;
 		                
@@ -497,8 +496,8 @@ public class FormDataModel {
 			return null;
 		Date earliest = null;
 		for (DrugOrder o : patientOrders) {
-			if (earliest == null || OpenmrsUtil.compareWithNullAsLatest(o.getStartDate(), earliest) < 0)
-				earliest = o.getStartDate();
+			if (earliest == null || OpenmrsUtil.compareWithNullAsLatest(o.getEffectiveStartDate(), earliest) < 0)
+				earliest = o.getEffectiveStartDate();
 		}
 		return earliest;
 	}

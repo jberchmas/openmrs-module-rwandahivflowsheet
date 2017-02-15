@@ -41,8 +41,8 @@ public class RegimenDrugHelper {
 		
 		boolean foundStopReason = false;
 		for(DrugOrder drugOrder : drugOrders) {
-			if(drugOrder.getDiscontinuedReason() != null)
-				foundStopReason |= drugOrder.getDiscontinuedReason().getConceptId() == stopConceptId;
+			if(drugOrder.getEffectiveStopDate() != null)
+				foundStopReason |= drugOrder.getOrderReason().getConceptId() == stopConceptId;
 		}
 
 		return foundStopReason;
